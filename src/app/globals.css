@@ -1,26 +1,177 @@
 @import "tailwindcss";
 
+/*
+  VitalIA · sistema visual "Plato del Bien Comer"
+  El color es información: verde = verduras y frutas (y "todo bien"), amarillo = cereales (y "atención"),
+  rojo = leguminosas y origen animal (y "cuidado"). Cada grupo de alimentos tiene un color fijo en toda la app.
+*/
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --bg: #f5f6f2;
+  --surface: #ffffff;
+  --surface-2: #eef0ea;
+  --border: #dfe3da;
+  --text: #15211b;
+  --muted: #56645c;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --primary: #177a47;
+  --primary-fg: #ffffff;
+  --primary-soft: #dff2e6;
+  --danger: #b8321f;
+  --danger-soft: #fbe6e1;
+  --warn: #855a00;
+  --warn-soft: #fcefc4;
+  --info: #24609f;
+  --info-soft: #e2edf9;
+
+  /* Campo de color (barra lateral, portada) */
+  --field: #0f3a28;
+  --field-2: #165236;
+  --field-fg: #f1f7f2;
+  --field-muted: #a9c6b4;
+
+  /* Grupos de alimentos (SMAE) */
+  --g-verduras: #2b9a4b;
+  --g-frutas: #93c22f;
+  --g-cereales: #f0b400;
+  --g-leguminosas: #e97a26;
+  --g-aoa: #d63c2c;
+  --g-leche: #3c86c9;
+  --g-grasas: #9a6a3c;
+  --g-azucares: #c2529a;
+  --g-libres: #8b949b;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --shadow-1: 0 1px 2px rgb(21 33 27 / 0.05), 0 6px 16px -8px rgb(21 33 27 / 0.12);
+  --shadow-2: 0 2px 4px rgb(21 33 27 / 0.06), 0 18px 36px -16px rgb(21 33 27 / 0.22);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg: #0c120f;
+    --surface: #141c18;
+    --surface-2: #1b2520;
+    --border: #28342d;
+    --text: #e8efea;
+    --muted: #9aa9a0;
+
+    --primary: #55cc88;
+    --primary-fg: #06150d;
+    --primary-soft: #153324;
+    --danger: #f28b7c;
+    --danger-soft: #3a1c17;
+    --warn: #efc254;
+    --warn-soft: #33290d;
+    --info: #8fb8ee;
+    --info-soft: #172638;
+
+    --field: #0a1f16;
+    --field-2: #123324;
+    --field-fg: #e8f3ec;
+    --field-muted: #86a895;
+
+    --g-verduras: #45b866;
+    --g-frutas: #a9d544;
+    --g-cereales: #f5c22b;
+    --g-leguminosas: #f08d42;
+    --g-aoa: #ea5a4a;
+    --g-leche: #5fa2e0;
+    --g-grasas: #b98858;
+    --g-azucares: #d672b0;
+    --g-libres: #97a1a8;
+
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 16px -8px rgb(0 0 0 / 0.5);
+    --shadow-2: 0 2px 4px rgb(0 0 0 / 0.3), 0 18px 36px -16px rgb(0 0 0 / 0.7);
   }
 }
 
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-primary-fg: var(--primary-fg);
+  --color-primary-soft: var(--primary-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-field: var(--field);
+  --color-field-2: var(--field-2);
+  --color-field-fg: var(--field-fg);
+  --color-field-muted: var(--field-muted);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+  --shadow-soft: var(--shadow-1);
+  --shadow-lift: var(--shadow-2);
+  --ease-out-expo: var(--ease-out);
+  --animate-enter: enter 0.42s var(--ease-out) both;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+}
+
+html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body), system-ui, sans-serif;
+  caret-color: var(--primary);
+}
+
+h1, h2, h3 { text-wrap: balance; }
+p { text-wrap: pretty; }
+
+input, select, textarea { color: var(--text); accent-color: var(--primary); }
+table, .tabular { font-variant-numeric: tabular-nums; }
+
+/* Superficies del navegador, del mismo sistema */
+::selection { background: color-mix(in oklab, var(--g-cereales) 55%, transparent); color: var(--text); }
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+a { text-underline-offset: 3px; }
+* { scrollbar-width: thin; scrollbar-color: color-mix(in oklab, var(--muted) 45%, transparent) transparent; }
+
+/* Movimiento: una entrada por página y el plato que se sirve */
+@keyframes enter {
+  from { opacity: 0; transform: translateY(8px); filter: blur(3px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+@property --plate-angle { syntax: "<angle>"; inherits: false; initial-value: 360deg; }
+@keyframes serve { from { --plate-angle: 0deg; } to { --plate-angle: 360deg; } }
+.plate-serve {
+  -webkit-mask: conic-gradient(#000 var(--plate-angle), transparent 0);
+  mask: conic-gradient(#000 var(--plate-angle), transparent 0);
+  animation: serve 0.9s var(--ease-out) both;
+}
+
+.skeleton {
+  border-radius: 0.75rem;
+  background: linear-gradient(90deg, var(--surface-2) 25%, color-mix(in oklab, var(--surface-2) 55%, var(--surface)) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+/* Las listas entran en cascada corta (máx. 8 pasos) */
+.stagger > * { animation: enter 0.42s var(--ease-out) both; }
+.stagger > :nth-child(2) { animation-delay: 40ms; }
+.stagger > :nth-child(3) { animation-delay: 80ms; }
+.stagger > :nth-child(4) { animation-delay: 120ms; }
+.stagger > :nth-child(5) { animation-delay: 160ms; }
+.stagger > :nth-child(6) { animation-delay: 200ms; }
+.stagger > :nth-child(7) { animation-delay: 240ms; }
+.stagger > :nth-child(n + 8) { animation-delay: 280ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; transition-duration: 0.01ms !important; }
+}
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: #fff; }
 }
