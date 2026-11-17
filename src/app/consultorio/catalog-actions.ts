@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient, requireRole } from "@/lib/supabase/server";
 import type { FormState } from "@/components/form";
+import { verifiedFileType } from "@/lib/security";
 
 const num = z.preprocess((v) => (v === "" || v == null ? null : Number(String(v).replace(",", "."))), z.number().min(0).max(100000).nullable());
 const txt = (max = 2000) => z.string().trim().max(max).optional().transform((v) => v || null);
@@ -78,6 +79,7 @@ export async function duplicate(table: "recipes" | "routines", id: string) {
   const rest = { ...data };
   delete rest.id;
   delete rest.created_at;
+  if ("image_path" in rest) rest.image_path = null; // la copia no comparte la foto
   const { data: copy, error } = await supabase.from(table).insert({ ...rest, name: `${rest.name} (copia)`, is_base: false }).select("id").single();
   if (error) throw new Error(error.message);
   redirect(table === "recipes" ? `/consultorio/recetas/${copy.id}/editar` : `/consultorio/ejercicios/rutinas/${copy.id}`);
@@ -135,4 +137,40 @@ export async function saveRoutine(id: string | null, payload: {
   if (res.error) return { error: res.error.message };
   revalidatePath("/consultorio/ejercicios");
   return { ok: "Rutina guardada.", id: res.data.id as string };
+}
+
+// ---------- Foto de receta ----------
+/** Sube la foto del platillo preparado. Las recetas del catálogo base son compartidas entre consultorios: para ponerles foto se duplican. */
+export async function uploadRecipeImage(id: string, _: FormState, fd: FormData): Promise<FormState> {
+  const session = await requireRole("nutriologo");
+  if (!z.uuid().safeParse(id).success) return { error: "Receta no válida." };
+  const file = fd.get("photo");
+  if (!(file instanceof File) || file.size === 0) return { error: "Elige una foto." };
+  if (file.size > 5 * 1024 * 1024) return { error: "La foto supera 5 MB." };
+  const type = await verifiedFileType(file, ["image/jpeg", "image/png", "image/webp"]);
+  if (!type) return { error: "Formato no permitido. Usa JPG, PNG o WEBP." };
+  const supabase = await createClient();
+  const { data: prev } = await supabase.from("recipes").select("image_path, clinic_id").eq("id", id).maybeSingle();
+  if (!prev) return { error: "Receta no encontrada." };
+  if (!prev.clinic_id) return { error: "Esta receta es del catálogo base. Duplícala para ponerle tu propia foto." };
+  const path = `${session.clinicId}/${id}/${crypto.randomUUID()}.${type.ext}`;
+  const up = await supabase.storage.from("recipes").upload(path, file, { contentType: type.mime });
+  if (up.error) return { error: "No se pudo subir la foto. Intenta de nuevo." };
+  const { error } = await supabase.from("recipes").update({ image_path: path }).eq("id", id);
+  if (error) { await supabase.storage.from("recipes").remove([path]); return { error: error.message }; }
+  if (prev.image_path) await supabase.storage.from("recipes").remove([prev.image_path]);
+  revalidatePath("/consultorio/recetas");
+  revalidatePath(`/consultorio/recetas/${id}`);
+  return { ok: "Foto guardada." };
+}
+
+export async function removeRecipeImage(id: string) {
+  await requireRole("nutriologo");
+  const supabase = await createClient();
+  const { data } = await supabase.from("recipes").select("image_path").eq("id", id).maybeSingle();
+  if (!data?.image_path) return;
+  const { error } = await supabase.from("recipes").update({ image_path: null }).eq("id", id);
+  if (!error) await supabase.storage.from("recipes").remove([data.image_path]);
+  revalidatePath("/consultorio/recetas");
+  revalidatePath(`/consultorio/recetas/${id}`);
 }

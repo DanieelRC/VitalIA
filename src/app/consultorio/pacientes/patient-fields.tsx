@@ -1,8 +1,9 @@
 import { Field, Input, Select, Textarea } from "@/components/ui";
-import type { Patient } from "@/lib/data";
+import type { CustomField, Patient } from "@/lib/data";
 
-export function PatientFields({ p }: { p?: Partial<Patient> }) {
+export function PatientFields({ p, customFields = [] }: { p?: Partial<Patient>; customFields?: CustomField[] }) {
   const ls = p?.lifestyle ?? {};
+  const cv = p?.custom ?? {};
   return (
     <div className="grid gap-4">
       <fieldset className="grid gap-3 sm:grid-cols-2">
@@ -17,7 +18,8 @@ export function PatientFields({ p }: { p?: Partial<Patient> }) {
           </Select>
         </Field>
         <Field label="Ocupación"><Input name="occupation" defaultValue={p?.occupation ?? ""} /></Field>
-        <Field label="Motivo / objetivo" className="sm:col-span-2"><Input name="goal" defaultValue={p?.goal ?? ""} /></Field>
+        <Field label="Motivo / objetivo"><Input name="goal" defaultValue={p?.goal ?? ""} /></Field>
+        <Field label="Peso meta (kg)" hint="El paciente lo ve en su progreso"><Input name="target_weight_kg" type="number" step="0.1" min={2} max={500} inputMode="decimal" defaultValue={p?.target_weight_kg ?? ""} /></Field>
       </fieldset>
       <fieldset className="grid gap-3 sm:grid-cols-2">
         <legend className="mb-2 text-sm font-semibold">Antecedentes clínicos</legend>
@@ -40,6 +42,22 @@ export function PatientFields({ p }: { p?: Partial<Patient> }) {
           <Textarea name="diet_history" defaultValue={p?.diet_history ?? ""} rows={3} />
         </Field>
       </fieldset>
+      {customFields.length > 0 && (
+        <fieldset className="grid gap-3 sm:grid-cols-3">
+          <legend className="mb-2 text-sm font-semibold">Campos del consultorio</legend>
+          {customFields.map((f) => (
+            <Field key={f.key} label={f.label}>
+              {f.kind === "lista" ? (
+                <Select name={`cf_${f.key}`} defaultValue={cv[f.key] ?? ""}><option value="">—</option>{f.options.map((o) => <option key={o} value={o}>{o}</option>)}</Select>
+              ) : f.kind === "si_no" ? (
+                <Select name={`cf_${f.key}`} defaultValue={cv[f.key] ?? ""}><option value="">—</option><option value="Sí">Sí</option><option value="No">No</option></Select>
+              ) : (
+                <Input name={`cf_${f.key}`} defaultValue={cv[f.key] ?? ""} maxLength={500} {...(f.kind === "numero" ? { type: "number", step: "any", inputMode: "decimal" as const } : {})} />
+              )}
+            </Field>
+          ))}
+        </fieldset>
+      )}
     </div>
   );
 }

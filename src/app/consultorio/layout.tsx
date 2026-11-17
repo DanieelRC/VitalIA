@@ -1,5 +1,7 @@
 import { AppShell } from "@/components/shell";
 import { requireRole } from "@/lib/supabase/server";
+import { isPlatformAdmin } from "@/lib/admin";
+import { PlanBanner } from "@/components/plan-banner";
 
 const nav = [
   { href: "/consultorio", label: "Inicio", icon: "home" },
@@ -16,10 +18,14 @@ const nav = [
   { href: "/consultorio/ejercicios", label: "Ejercicios y rutinas", section: "Catálogos", icon: "exercise" },
   { href: "/consultorio/biblioteca", label: "Material educativo", section: "Anexos", icon: "library" },
   { href: "/consultorio/referencias", label: "Tablas de referencia", section: "Anexos", icon: "reference" },
+  { href: "/consultorio/personalizar", label: "Personalizar", section: "Consultorio", icon: "sliders" },
   { href: "/consultorio/ajustes", label: "Ajustes e IA", section: "Consultorio", icon: "settings" },
+  { href: "/consultorio/privacidad", label: "Privacidad y ARCO", section: "Consultorio", icon: "shield" },
+  { href: "/consultorio/suscripcion", label: "Suscripción", section: "Consultorio", icon: "wallet" },
 ];
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
   const s = await requireRole("nutriologo");
-  return <AppShell nav={nav} user={s.fullName ?? s.email}>{children}</AppShell>;
+  const items = (await isPlatformAdmin(s.userId)) ? [...nav, { href: "/admin", label: "Administración", section: "VitalIA", icon: "crown" }] : nav;
+  return <AppShell nav={items} user={s.fullName ?? s.email}><PlanBanner />{children}</AppShell>;
 }

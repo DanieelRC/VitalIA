@@ -9,7 +9,7 @@ export const metadata = { title: "Material educativo" };
 
 async function addMaterial(_: FormState, fd: FormData): Promise<FormState> {
   "use server";
-  await requireRole("nutriologo");
+  const session = await requireRole("nutriologo");
   const d = z.object({
     title: z.string().trim().min(2).max(200), category: z.string().max(100).optional(), description: z.string().max(500).optional(),
     body: z.string().max(20000).optional(), url: z.url().optional().or(z.literal("")),
@@ -21,7 +21,7 @@ async function addMaterial(_: FormState, fd: FormData): Promise<FormState> {
   if (file instanceof File && file.size > 0) {
     if (file.size > 20 * 1024 * 1024) return { error: "Máximo 20 MB." };
     if (!["application/pdf", "image/png", "image/jpeg", "image/webp"].includes(file.type)) return { error: "Solo PDF o imagen." };
-    file_path = `${crypto.randomUUID()}.${file.type === "application/pdf" ? "pdf" : file.type.split("/")[1]}`;
+    file_path = `${session.clinicId}/${crypto.randomUUID()}.${file.type === "application/pdf" ? "pdf" : file.type.split("/")[1]}`;
     const up = await supabase.storage.from("education").upload(file_path, file, { contentType: file.type });
     if (up.error) return { error: up.error.message };
   }

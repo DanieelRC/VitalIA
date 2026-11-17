@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { ActionForm, SubmitButton } from "@/components/form";
 import { Plate, PlateMark, Wordmark } from "@/components/plate";
 import { Alert, Field, Input } from "@/components/ui";
+import { LegalLinks } from "@/components/legal-doc";
 import { requestReset, signIn } from "../actions";
 
 export const metadata = { title: "Iniciar sesión" };
@@ -32,6 +34,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <h1 className="font-display text-3xl font-extrabold tracking-tight">Qué gusto verte</h1>
           <p className="mt-1 mb-6 text-sm text-muted">Entra con el correo al que llegó tu invitación.</p>
           {error === "sin-expediente" && <div className="mb-4"><Alert tone="warn">Tu cuenta no tiene expediente asociado. Escríbele a tu nutriólogo para que te lo active.</Alert></div>}
+          {error === "sin-consultorio" && <div className="mb-4"><Alert tone="warn">Tu cuenta no pertenece a ningún consultorio. <Link href="/registro" className="font-semibold underline">Crea uno</Link> o pide acceso a quien lo administra.</Alert></div>}
           {error === "enlace" && <div className="mb-4"><Alert tone="warn">El enlace no es válido o ya expiró. Pide uno nuevo abajo.</Alert></div>}
           <ActionForm action={signIn} className="flex flex-col gap-4">
             <Field label="Correo"><Input name="email" type="email" autoComplete="email" required /></Field>
@@ -46,6 +49,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             </ActionForm>
           </details>
           <p className="mt-8 text-xs text-muted lg:hidden">El acceso es por invitación de tu nutriólogo.</p>
+          <p className="mt-6 text-sm text-muted">¿Eres nutriólogo? <Link href="/registro" className="font-semibold text-primary hover:underline">Crea tu consultorio</Link></p>
+          <LegalLinks className="mt-6 text-xs text-muted" />
         </div>
       </main>
     </div>

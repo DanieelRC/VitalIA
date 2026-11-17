@@ -41,6 +41,10 @@ export type Session = {
   role: Role;
   fullName: string | null;
   patientId: string | null;
+  /** Consultorio al que pertenece el usuario (nutriólogo o paciente) */
+  clinicId: string | null;
+  /** Activó la verificación en dos pasos pero esta sesión aún no la completa */
+  mfaPending: boolean;
 };
 
 /** Usuario autenticado con su rol (validado contra Supabase Auth, no solo la cookie). */
@@ -50,14 +54,18 @@ export const getSession = cache(async (): Promise<Session | null> => {
   if (!user) return null;
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, full_name")
+    .select("role, full_name, clinic_id")
     .eq("id", user.id)
     .single();
   if (!profile) return null;
   let patientId: string | null = null;
+  let clinicId: string | null = profile.clinic_id;
+  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  const mfaPending = aal?.nextLevel === "aal2" && aal.currentLevel !== "aal2";
   if (profile.role === "paciente") {
-    const { data: p } = await supabase.from("my_patient").select("id").single();
+    const [{ data: p }, { data: c }] = await Promise.all([supabase.from("my_patient").select("id").single(), supabase.rpc("current_clinic_id")]);
     patientId = p?.id ?? null;
+    clinicId = (c as string | null) ?? null;
   }
   return {
     userId: user.id,
@@ -65,13 +73,17 @@ export const getSession = cache(async (): Promise<Session | null> => {
     role: profile.role,
     fullName: profile.full_name,
     patientId,
+    clinicId,
+    mfaPending,
   };
 });
 
 export async function requireRole(role: Role): Promise<Session> {
   const s = await getSession();
   if (!s) redirect("/login");
+  if (s.mfaPending) redirect("/login/verificar");
   if (s.role !== role) redirect(s.role === "nutriologo" ? "/consultorio" : "/portal");
   if (role === "paciente" && !s.patientId) redirect("/login?error=sin-expediente");
+  if (role === "nutriologo" && !s.clinicId) redirect("/login?error=sin-consultorio");
   return s;
 }

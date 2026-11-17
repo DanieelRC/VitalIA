@@ -1,7 +1,9 @@
 import { ActionForm, ConfirmButton, SubmitButton } from "@/components/form";
 import { ProgressChart } from "@/components/progress-chart";
 import { Badge, Card, Empty, Field, fmtDate, Input, Table, Td, Textarea } from "@/components/ui";
-import { evaluationLabels } from "@/lib/nutrition";
+import { BMI_SCALE, bodyFatScale, evaluationLabels, waistScale, whrScale, WHTR_SCALE, type Scale } from "@/lib/nutrition";
+import { FormulaCard } from "@/components/formula";
+import { getPatient } from "@/lib/data";
 import { createClient } from "@/lib/supabase/server";
 import { todayLocal } from "@/lib/time";
 import { deleteMeasurement, saveMeasurement } from "./actions";
@@ -15,7 +17,12 @@ type Row = { id: string; measured_at: string; weight_kg: number | null; height_c
 export default async function Antropometria({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
-  const { data } = await supabase.from("anthropometry").select("*").eq("patient_id", id).order("measured_at", { ascending: false });
+  const [{ data }, patient] = await Promise.all([
+    supabase.from("anthropometry").select("*").eq("patient_id", id).order("measured_at", { ascending: false }),
+    getPatient(id),
+  ]);
+  const sex = patient.sex ?? "F";
+  const SCALES: Record<string, Scale> = { imc: BMI_SCALE, grasa_pct: bodyFatScale(sex), icc: whrScale(sex), ice: WHTR_SCALE };
   const rows = (data ?? []) as Row[];
   const latest = rows[0];
   const chart = [...rows].reverse().map((r) => ({
@@ -51,15 +58,21 @@ export default async function Antropometria({ params }: { params: Promise<{ id: 
 
       {latest && (
         <Card title={`Evaluación · ${fmtDate(latest.measured_at)}`}>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {Object.entries(latest.results).map(([k, v]) => (
-              <div key={k} className="rounded-lg bg-surface-2 p-3">
-                <p className="text-xs text-muted">{evaluationLabels[k] ?? k}</p>
-                <p className="text-lg font-semibold tabular-nums">{String(v.value)} {v.label && <Badge tone={/riesgo|obesidad|sobrepeso|bajo/i.test(v.label) && !/sin riesgo/i.test(v.label) ? "warn" : "primary"}>{v.label}</Badge>}</p>
-                {v.method && <p className="text-xs text-muted">{v.method}</p>}
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {Object.entries(latest.results).filter(([k]) => SCALES[k]).map(([k, v]) => (
+              <FormulaCard key={k} title={evaluationLabels[k] ?? k} value={Number(v.value)} scale={SCALES[k]} hint={[v.label, v.method].filter(Boolean).join(" · ")} />
+            ))}
+            {latest.circumferences?.cintura ? <FormulaCard title="Circunferencia de cintura" value={Number(latest.circumferences.cintura)} unit="cm" scale={waistScale(sex)} hint={`Riesgo desde ${sex === "M" ? 90 : 80} cm (IDF)`} /> : null}
+          </div>
+          <dl className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            {Object.entries(latest.results).filter(([k]) => !SCALES[k]).map(([k, v]) => (
+              <div key={k} className="rounded-xl bg-surface-2 p-3">
+                <dt className="text-xs text-muted">{evaluationLabels[k] ?? k}</dt>
+                <dd className="tabular font-display text-lg font-bold">{String(v.value)} {v.label && <Badge tone={/riesgo|obesidad|sobrepeso|bajo/i.test(v.label) && !/sin riesgo/i.test(v.label) ? "warn" : "primary"}>{v.label}</Badge>}</dd>
+                {v.method && <dd className="text-xs text-muted">{v.method}</dd>}
               </div>
             ))}
-          </div>
+          </dl>
         </Card>
       )}
 

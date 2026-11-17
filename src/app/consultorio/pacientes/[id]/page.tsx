@@ -1,7 +1,8 @@
 import { ActionForm, SubmitButton } from "@/components/form";
 import { Alert, Button, Card, fmtDate, fmtDateTime, LinkButton } from "@/components/ui";
-import { getLatestAnthropometry, getPatient } from "@/lib/data";
+import { getCustomFields, getLatestAnthropometry, getPatient } from "@/lib/data";
 import { createClient } from "@/lib/supabase/server";
+import { InviteLink } from "@/components/invite-link";
 import { resendInvite, setPatientActive, updatePatient } from "../actions";
 import { PatientFields } from "../patient-fields";
 
@@ -9,7 +10,8 @@ export default async function PatientSummary({ params }: { params: Promise<{ id:
   const { id } = await params;
   const p = await getPatient(id);
   const supabase = await createClient();
-  const [last, plan, nextAppt] = await Promise.all([
+  const [customFields, last, plan, nextAppt] = await Promise.all([
+    getCustomFields(),
     getLatestAnthropometry(id),
     supabase.from("meal_plans").select("id, name, kcal_target").eq("patient_id", id).eq("status", "activo").maybeSingle(),
     supabase.from("appointments").select("starts_at, status").eq("patient_id", id).gte("starts_at", new Date().toISOString())
@@ -20,7 +22,7 @@ export default async function PatientSummary({ params }: { params: Promise<{ id:
     <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
       <Card title="Historia clínico-nutricional">
         <ActionForm action={updatePatient.bind(null, id)}>
-          <PatientFields p={p} />
+          <PatientFields p={p} customFields={customFields} />
           <div className="mt-4"><SubmitButton>Guardar</SubmitButton></div>
         </ActionForm>
       </Card>
@@ -34,6 +36,7 @@ export default async function PatientSummary({ params }: { params: Promise<{ id:
               <ActionForm action={async () => { "use server"; return resendInvite(id); }}>
                 <SubmitButton variant="secondary" size="sm" pendingText="Enviando…">{p.invited_at ? "Reenviar invitación" : "Enviar invitación"}</SubmitButton>
               </ActionForm>
+              <InviteLink patientId={id} />
             </>
           )}
         </Card>

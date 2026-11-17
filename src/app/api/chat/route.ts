@@ -1,11 +1,14 @@
 import { createXai } from "@ai-sdk/xai";
-import { createUIMessageStream, createUIMessageStreamResponse, generateId, streamText, toUIMessageStream, type ModelMessage } from "ai";
+import { createUIMessageStream, createUIMessageStreamResponse, generateId, stepCountIs, streamText, toUIMessageStream, type ModelMessage } from "ai";
 import { z } from "zod";
-import { createAdminClient, getSession } from "@/lib/supabase/server";
+import { createAdminClient, createClient, getSession } from "@/lib/supabase/server";
 import { costUsd, estimateCost, LIMIT_MESSAGES, parsePrices } from "@/lib/ai/budget";
 import { patientContext } from "@/lib/ai/context";
 import { sanitize, screenInput } from "@/lib/ai/guard";
-import { PATIENT_SYSTEM, PRO_SYSTEM } from "@/lib/ai/prompts";
+import { COPILOT_SYSTEM, PATIENT_SYSTEM, PRO_SYSTEM } from "@/lib/ai/prompts";
+import { evolutionCard, patientCard } from "@/lib/ai/patient-cards";
+import { proTools } from "@/lib/ai/tools";
+import type { CalcResult } from "@/lib/ai/calc";
 import { maybeSendBudgetAlert } from "@/lib/ai/alerts";
 import { cacheKey, isFollowUp } from "@/lib/ai/cache";
 import { todayLocal } from "@/lib/time";
@@ -43,20 +46,24 @@ export async function POST(req: Request) {
   const s = await getSession();
   if (!s) return new Response("No autorizado", { status: 401 });
   if (s.role === "paciente" && !s.patientId) return new Response("Sin expediente", { status: 403 });
+  if (!s.clinicId) return new Response("Sin consultorio", { status: 403 });
+  if (s.mfaPending) return new Response("Verificación pendiente", { status: 401 });
 
   // 2. Solo se acepta el texto del último mensaje; el historial lo arma el servidor.
-  const body = z.object({ text: z.string() }).safeParse(await req.json().catch(() => null));
+  const body = z.object({ text: z.string(), patientId: z.uuid().optional() }).safeParse(await req.json().catch(() => null));
   if (!body.success) return new Response("Solicitud inválida", { status: 400 });
   const text = sanitize(body.data.text);
   if (!text) return fail("empty", 400);
 
   const admin = createAdminClient();
-  const { data: settings } = await admin.from("ai_settings").select("*").eq("id", 1).single();
+  const { data: settings } = await admin.from("ai_settings").select("*").eq("clinic_id", s.clinicId).single();
   if (!settings) return fail("disabled", 503);
   if (!settings.enabled) return fail("disabled", 503);
   if (text.length > settings.max_input_chars) return fail("too_long", 413);
 
   const isPro = s.role === "nutriologo";
+  // Copiloto de consulta: solo el nutriólogo puede abrir el hilo de un expediente (el paciente jamás envía patientId útil)
+  const copilotId = isPro ? body.data.patientId ?? null : null;
   const model = isPro ? (process.env.XAI_MODEL_PRO ?? "grok-4.20-0309-non-reasoning") : (process.env.XAI_MODEL_PATIENT ?? "grok-4.20-0309-non-reasoning");
   const maxOutputTokens = isPro ? settings.pro_max_output_tokens : settings.max_output_tokens;
 
@@ -77,12 +84,21 @@ export async function POST(req: Request) {
   if (!process.env.XAI_API_KEY) return fail("disabled", 503);
 
   // 4. Historial reciente desde la base (no confiable desde el cliente): últimos N turnos de los últimos 7 días
+  const supabase = isPro ? await createClient() : null;
+  let copilotCtx = "", copilotWeight: number | undefined;
+  if (copilotId) {
+    // Se lee con la sesión del nutriólogo (RLS) y sin nombre ni datos de contacto
+    const [pc, ev] = await Promise.all([patientCard(supabase!, copilotId, true), evolutionCard(supabase!, copilotId, true)]);
+    if ("error" in pc) return new Response("Paciente no encontrado", { status: 404 });
+    copilotWeight = parseFloat(pc.resultados.find((r) => r.etiqueta === "Peso")?.valor ?? "") || undefined;
+    copilotCtx = JSON.stringify("error" in ev ? [pc] : [pc, ev]);
+  }
+  const baseHistory = admin.from("ai_messages").select("role, content, cards").eq("user_id", s.userId).is("blocked_reason", null);
   const [{ data: history }, system] = await Promise.all([
-    admin.from("ai_messages").select("role, content")
-      .eq("user_id", s.userId).is("blocked_reason", null)
+    (copilotId ? baseHistory.eq("patient_id", copilotId) : baseHistory.is("patient_id", null))
       .gte("created_at", new Date(Date.now() - HISTORY_DAYS * 864e5).toISOString())
       .order("created_at", { ascending: false }).limit(settings.history_turns * 2),
-    isPro ? Promise.resolve(PRO_SYSTEM) : patientContext(s.patientId!).then((ctx) => `${PATIENT_SYSTEM}\n\n${ctx}`),
+    isPro ? Promise.resolve(copilotId ? `${PRO_SYSTEM}\n\n${COPILOT_SYSTEM}\n\n<expediente_paciente>\n${copilotCtx}\n</expediente_paciente>` : PRO_SYSTEM) : patientContext(s.patientId!).then((ctx) => `${PATIENT_SYSTEM}\n\n${ctx}`),
   ]);
   const rows = (history ?? []).reverse();
   while (rows[0]?.role === "assistant") rows.shift(); // el historial debe empezar con una pregunta
@@ -92,7 +108,8 @@ export async function POST(req: Request) {
   // 5. Caché del día: misma pregunta independiente con el mismo contexto → respuesta guardada, sin costo.
   //    Las preguntas de seguimiento dependen de la conversación y siempre van al modelo.
   const day = todayLocal();
-  const cacheable = !isFollowUp(text);
+  // El nutriólogo usa herramientas que leen expedientes y catálogos vivos: sus respuestas no se guardan en caché.
+  const cacheable = !isPro && !isFollowUp(text);
   const key = cacheKey({ day, model, system, question: text });
   const { data: cached } = cacheable
     ? await admin.from("ai_cache").select("id, answer, hits").eq("user_id", s.userId).eq("cache_key", key).maybeSingle()
@@ -115,17 +132,27 @@ export async function POST(req: Request) {
   if (!reserve?.ok) return fail(reserve?.reason ?? "budget", reserve?.reason === "disabled" ? 503 : 429);
   const usageId = reserve.usage_id as string;
 
-  await admin.from("ai_messages").insert({ user_id: s.userId, role: "user", content: text });
+  await admin.from("ai_messages").insert({ user_id: s.userId, role: "user", content: text, patient_id: copilotId });
 
-  // 7. Llamada en streaming con tope de salida
+  // 7. Llamada en streaming con tope de salida. El nutriólogo dispone de herramientas de cálculo (solo lectura).
+  const cards: CalcResult[] = [];
+  const tools = isPro ? proTools(supabase!, (c) => cards.push(c), [text, copilotCtx, ...rows.map((m) => `${m.role === "user" ? m.content : ""}\n${m.cards ? JSON.stringify(m.cards) : ""}`)].join("\n"), copilotId ? { id: copilotId, weightKg: copilotWeight } : undefined) : undefined;
   const result = streamText({
     model: xai(model),
     system,
     messages: [...past, { role: "user", content: `<mensaje_usuario>\n${text}\n</mensaje_usuario>` }],
     maxOutputTokens,
-    temperature: isPro ? 0.3 : 0.5,
+    temperature: isPro ? 0.2 : 0.5,
+    ...(tools ? { tools, stopWhen: stepCountIs(copilotId ? 10 : 6) } : {}),
     abortSignal: req.signal,
-    onEnd: async ({ totalUsage, text: answer, finishReason }) => {
+    onEnd: async ({ totalUsage, steps, finishReason }) => {
+      const answer = steps.map((st) => st.text).filter(Boolean).join("\n\n");
+      if (process.env.NODE_ENV === "development") {
+        // Diagnóstico local: qué herramientas se negaron y por qué
+        for (const st of steps) for (const r of (st.toolResults ?? []) as unknown as { toolName: string; input: unknown; output: unknown }[]) {
+          if (r.output && typeof r.output === "object" && "error" in r.output) console.warn("[asistente] herramienta rechazada:", r.toolName, JSON.stringify(r.input), (r.output as { error: string }).error);
+        }
+      }
       // Solo se guardan en caché respuestas completas (no cortadas por el tope de tokens)
       if (cacheable && answer && finishReason === "stop") {
         await admin.from("ai_cache").delete().eq("user_id", s.userId).lt("day", day);
@@ -136,8 +163,8 @@ export async function POST(req: Request) {
       await admin.from("ai_usage").update({
         status: "final", input_tokens: inT, output_tokens: outT, cost_usd: costUsd(prices, model, inT, outT),
       }).eq("id", usageId);
-      if (answer) await admin.from("ai_messages").insert({ user_id: s.userId, role: "assistant", content: answer });
-      await maybeSendBudgetAlert(admin);
+      if (answer || cards.length) await admin.from("ai_messages").insert({ user_id: s.userId, role: "assistant", content: answer || "(cálculo)", cards: cards.length ? cards : null, patient_id: copilotId });
+      await maybeSendBudgetAlert(admin, s.clinicId!);
     },
     onError: async () => {
       // Se conserva el costo estimado como gasto (conservador) y se marca el error

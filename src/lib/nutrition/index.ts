@@ -4,3 +4,6 @@ export * from "./macros";
 export * from "./equivalents";
 export * from "./exercise";
 export * from "./evaluate";
+export * from "./macro-solver";
+export * from "./expr";
+export * from "./clinical";

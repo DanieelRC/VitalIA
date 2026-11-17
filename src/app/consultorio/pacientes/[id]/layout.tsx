@@ -5,6 +5,7 @@ import { ageFromBirthDate } from "@/lib/nutrition";
 
 const tabs = [
   { href: "", label: "Resumen" },
+  { href: "/copiloto", label: "Copiloto" },
   { href: "/preconsulta", label: "Pre-consulta" },
   { href: "/expediente", label: "Expediente SOAP" },
   { href: "/antropometria", label: "Antropometría" },

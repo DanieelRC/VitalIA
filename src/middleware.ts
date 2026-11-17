@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
   const path = request.nextUrl.pathname;
-  const isPrivate = path.startsWith("/consultorio") || path.startsWith("/portal") || path === "/invitacion";
+  const isPrivate = path.startsWith("/consultorio") || path.startsWith("/portal") || path.startsWith("/admin") || path === "/invitacion";
 
   if (!user && isPrivate) {
     const url = request.nextUrl.clone();
@@ -33,5 +33,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|sw.js|manifest.webmanifest|pwa-icon|api/cron).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|sw.js|manifest.webmanifest|pwa-icon|api/cron|api/webhooks).*)"],
 };

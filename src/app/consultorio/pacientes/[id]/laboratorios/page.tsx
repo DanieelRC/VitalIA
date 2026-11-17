@@ -4,6 +4,8 @@ import { ActionForm, ConfirmButton, SubmitButton, type FormState } from "@/compo
 import { ProgressChart } from "@/components/progress-chart";
 import { Badge, Card, Empty, Field, fmtDate, Input, Textarea } from "@/components/ui";
 import { LABS, labFlag } from "@/lib/nutrition/labs";
+import { rangeScale } from "@/lib/nutrition";
+import { RangeGauge } from "@/components/range-gauge";
 import { createClient, requireRole } from "@/lib/supabase/server";
 import { todayLocal } from "@/lib/time";
 
@@ -52,6 +54,17 @@ export default async function Labs({ params }: { params: Promise<{ id: string }>
       <div className="grid gap-4">
         {charted.length > 0 && (
           <Card title="Evolución"><ProgressChart data={chart} series={charted.map((l) => ({ key: l.key, label: `${l.label} (${l.unit})` }))} /></Card>
+        )}
+        {rows.length > 0 && (
+          <Card title={`Últimos resultados · ${fmtDate(rows[0].taken_on)}`}>
+            <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
+              {LABS.filter((l) => rows[0].values[l.key] != null).map((l) => {
+                const prev = rows.slice(1).find((r) => r.values[l.key] != null)?.values[l.key];
+                const v = rows[0].values[l.key], d = prev != null ? Math.round((v - prev) * 100) / 100 : null;
+                return <RangeGauge key={l.key} scale={rangeScale(l.low, l.high, l.unit)} value={v} label={l.label} hint={d == null ? l.note : `${d > 0 ? "+" : ""}${d} ${l.unit} desde el estudio anterior`} />;
+              })}
+            </div>
+          </Card>
         )}
         <Card title="Resultados">
           {rows.length ? (

@@ -1,6 +1,6 @@
 import { renderToBuffer, type DocumentProps } from "@react-pdf/renderer";
 import { NextResponse } from "next/server";
-import { Box, Frame, H2, P, Table, type Clinic } from "@/lib/pdf/documents";
+import { accentOf, Box, Frame, H2, P, Table, type Clinic } from "@/lib/pdf/documents";
 import { createClient, getSession } from "@/lib/supabase/server";
 import { ageFromBirthDate, evaluationLabels } from "@/lib/nutrition";
 import type { MealPlan } from "@/lib/data";
@@ -12,7 +12,7 @@ const fmt = (d: string | null | undefined) =>
   d ? new Intl.DateTimeFormat("es-MX", { dateStyle: "long", timeZone: /^\d{4}-\d{2}-\d{2}$/.test(d) ? "UTC" : "America/Mexico_City" }).format(new Date(d)) : "—";
 
 async function clinicInfo(supabase: Awaited<ReturnType<typeof createClient>>): Promise<Clinic> {
-  const { data } = await supabase.from("clinic_settings").select("*").eq("id", 1).single();
+  const { data } = await supabase.from("clinic_settings").select("*").single();
   let logo: string | null = null;
   if (data?.logo_path) {
     const { data: file } = await supabase.storage.from("clinic").download(data.logo_path);
@@ -27,6 +27,8 @@ export async function GET(_: Request, { params }: { params: Promise<{ tipo: stri
   if (!session) return new NextResponse("No autorizado", { status: 401 });
   const supabase = await createClient();
   const clinic = await clinicInfo(supabase);
+  const accent = accentOf(clinic);
+  const Heading = ({ children }: { children: React.ReactNode }) => <H2 color={accent}>{children}</H2>;
   let doc: React.ReactElement<DocumentProps>;
   let filename: string;
 
@@ -46,22 +48,25 @@ export async function GET(_: Request, { params }: { params: Promise<{ tipo: stri
     const rname = Object.fromEntries((recipes ?? []).map((r) => [r.id, r.name]));
     const used = (groups ?? []).filter((g) => p.meals.some((m) => (m.equivalents[g.code] ?? 0) > 0));
     filename = `plan-${patientName.replace(/\W+/g, "-")}.pdf`;
+    const show = { equivalentes: true, menu: true, recomendaciones: true, intercambios: true, ...(clinic.pdf_sections ?? {}) };
     doc = (
       <Frame clinic={clinic} title={p.name} subtitle={`${patientName} · Inicio: ${fmt(p.start_date)}`}>
         <Box><P>Energía: {p.kcal_target} kcal/día · Proteína {Math.round(p.macros.protein_g)} g · Lípidos {Math.round(p.macros.fat_g)} g · Hidratos {Math.round(p.macros.carbs_g)} g</P></Box>
-        <H2>Equivalentes por tiempo de comida</H2>
-        <Table head={["Grupo", ...p.meals.map((m) => m.name)]} widths={[2.2, ...p.meals.map(() => 1)]}
-          rows={used.map((g) => [gl(g.code), ...p.meals.map((m) => m.equivalents[g.code] || "")])} />
-        {p.menu.length > 0 && <>
-          <H2>Menú sugerido</H2>
+        {show.equivalentes && <>
+          <Heading>Equivalentes por tiempo de comida</Heading>
+          <Table head={["Grupo", ...p.meals.map((m) => m.name)]} widths={[2.2, ...p.meals.map(() => 1)]}
+            rows={used.map((g) => [gl(g.code), ...p.meals.map((m) => m.equivalents[g.code] || "")])} />
+        </>}
+        {show.menu && p.menu.length > 0 && <>
+          <Heading>Menú sugerido</Heading>
           {DAYS.map((d, i) => {
             const items = p.menu.filter((x) => x.day === i + 1).sort((a, b) => a.meal - b.meal);
             return items.length ? <P key={d}>{d}: {items.map((x) => `${p.meals[x.meal]?.name}: ${[x.recipe_id ? rname[x.recipe_id] : "", x.text].filter(Boolean).join(" ")}`).join(" · ")}</P> : null;
           })}
         </>}
-        {p.recommendations && <><H2>Recomendaciones</H2><P>{p.recommendations}</P></>}
-        <H2>Lista de equivalentes (1 porción)</H2>
-        {used.map((g) => (
+        {show.recomendaciones && p.recommendations && <><Heading>Recomendaciones</Heading><P>{p.recommendations}</P></>}
+        {show.intercambios && <Heading>Lista de equivalentes (1 porción)</Heading>}
+        {show.intercambios && used.map((g) => (
           <P key={g.code}><P>{gl(g.code)}: </P>{(foods ?? []).filter((f) => f.group_code === g.code).slice(0, 12).map((f) => `${f.name} ${f.portion}`).join(" · ")}</P>
         ))}
       </Frame>
@@ -77,7 +82,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ tipo: stri
     filename = `expediente-${pt.full_name.replace(/\W+/g, "-")}.pdf`;
     doc = (
       <Frame clinic={clinic} title="Expediente clínico-nutricional" subtitle={`${pt.full_name} · ${pt.birth_date ? `${ageFromBirthDate(pt.birth_date)} años` : ""} · ${pt.sex ?? ""}`}>
-        <H2>Historia clínica</H2>
+        <Heading>Historia clínica</Heading>
         <P>Objetivo: {pt.goal ?? "—"}</P>
         <P>Patologías: {pt.pathologies.join(", ") || "—"} · Alergias: {pt.allergies.join(", ") || "—"}</P>
         <P>Medicamentos: {pt.medications ?? "—"}</P>
@@ -85,12 +90,12 @@ export async function GET(_: Request, { params }: { params: Promise<{ tipo: stri
         <P>AHF: {pt.family_history ?? "—"}</P>
         <P>Historia dietética: {pt.diet_history ?? "—"}</P>
         {(anth ?? []).length > 0 && <>
-          <H2>Antropometría</H2>
+          <Heading>Antropometría</Heading>
           <Table head={["Fecha", "Peso", "Talla", "IMC", "% grasa", "Cintura"]}
             rows={(anth ?? []).map((a) => [fmt(a.measured_at), a.weight_kg ?? "", a.height_cm ?? "", String(a.results?.imc?.value ?? ""), String(a.results?.grasa_pct?.value ?? ""), a.circumferences?.cintura ?? ""])} />
           <P muted>Última evaluación: {Object.entries(anth!.at(-1)!.results ?? {}).map(([k, v]) => `${evaluationLabels[k] ?? k} ${(v as { value: unknown }).value}`).join(" · ")}</P>
         </>}
-        <H2>Notas de evolución (SOAP)</H2>
+        <Heading>Notas de evolución (SOAP)</Heading>
         {(cons ?? []).map((c) => (
           <Box key={c.id}>
             <P>{fmt(c.consulted_at)} · {c.status === "firmada" ? `Firmada ${fmt(c.signed_at)}` : "BORRADOR"} {c.reason ? `· ${c.reason}` : ""}</P>
@@ -114,7 +119,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ tipo: stri
         <Box><P>Recibí de: {name}</P></Box>
         <Table head={["Concepto", "Forma de pago", "Importe"]} widths={[3, 1.5, 1]}
           rows={[[pay.sessions ? `${pay.concept} (${pay.sessions} sesiones)` : pay.concept, pay.method, money]]} />
-        <H2>Total: {money}</H2>
+        <Heading>Total: {money}</Heading>
         <P muted>Este recibo es un comprobante de pago del consultorio y no sustituye a una factura fiscal (CFDI).</P>
       </Frame>
     );

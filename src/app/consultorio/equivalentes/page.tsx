@@ -1,4 +1,4 @@
-import { Card, PageHeader, Table, Td } from "@/components/ui";
+import { Card, LinkButton, PageHeader, Table, Td } from "@/components/ui";
 import { getGroups, groupLabel } from "@/lib/data";
 import { createClient } from "@/lib/supabase/server";
 import { GroupDot } from "@/components/plate";
@@ -12,7 +12,7 @@ export default async function Equivalents() {
 
   return (
     <>
-      <PageHeader title="Sistema Mexicano de Alimentos Equivalentes" subtitle="Aporte promedio por equivalente." />
+      <PageHeader title="Sistema Mexicano de Alimentos Equivalentes" subtitle="Aporte promedio por equivalente." actions={<LinkButton href="/consultorio/personalizar" size="sm">Ajustar aportes y crear grupos</LinkButton>} />
       <Card className="mb-4">
         <Table head={["Grupo", "kcal", "Proteína (g)", "Lípidos (g)", "Hidratos (g)"]}>
           {groups.map((g) => (

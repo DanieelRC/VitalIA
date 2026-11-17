@@ -1,4 +1,5 @@
 "use server";
+import { planError } from "@/lib/plan";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -14,15 +15,23 @@ const patientSchema = z.object({
   phone: opt, birth_date: opt, sex: z.enum(["M", "F"]).nullable().optional(),
   occupation: opt, goal: opt, medications: opt, personal_history: opt, family_history: opt,
   gyneco_history: opt, diet_history: opt,
+  target_weight_kg: z.preprocess((v) => (v === "" || v == null ? null : Number(v)), z.number().min(2).max(500).nullable()),
 });
 
 function parsePatient(fd: FormData) {
   const raw = Object.fromEntries(fd);
   const parsed = patientSchema.safeParse({ ...raw, sex: raw.sex || null });
   if (!parsed.success) return { error: parsed.error.issues[0].message } as const;
+  // Campos propios del consultorio (cf_<clave>)
+  const custom: Record<string, string> = {};
+  for (const [k, v] of Object.entries(raw)) {
+    const key = k.startsWith("cf_") ? k.slice(3) : "";
+    if (/^[a-z][a-z0-9_]{1,40}$/.test(key) && Object.keys(custom).length < 60) custom[key] = String(v).trim().slice(0, 500);
+  }
   return {
     data: {
       ...parsed.data,
+      custom,
       pathologies: list(raw.pathologies),
       allergies: list(raw.allergies),
       lifestyle: {
@@ -48,7 +57,7 @@ export async function createPatient(_: FormState, fd: FormData): Promise<FormSta
   if ("error" in p) return { error: p.error };
   const supabase = await createClient();
   const { data, error } = await supabase.from("patients").insert(p.data).select("id").single();
-  if (error) return { error: error.code === "23505" ? "Ya existe un paciente con ese correo." : error.message };
+  if (error) return { error: planError(error.message) ?? (error.code === "23505" ? "Ya existe un paciente con ese correo." : error.message) };
 
   if (fd.get("send_invite") === "on") {
     const err = await invite(p.data.email, p.data.full_name);
@@ -63,7 +72,9 @@ export async function updatePatient(id: string, _: FormState, fd: FormData): Pro
   const p = parsePatient(fd);
   if ("error" in p) return { error: p.error };
   const supabase = await createClient();
-  const { error } = await supabase.from("patients").update(p.data).eq("id", id);
+  // Se conservan los valores de campos que ya no existen en el formulario
+  const { data: prev } = await supabase.from("patients").select("custom").eq("id", id).single();
+  const { error } = await supabase.from("patients").update({ ...p.data, custom: { ...(prev?.custom ?? {}), ...p.data.custom } }).eq("id", id);
   if (error) return { error: error.message };
   revalidatePath(`/consultorio/pacientes/${id}`);
   return { ok: "Datos guardados." };
@@ -82,9 +93,38 @@ export async function resendInvite(id: string): Promise<FormState> {
   return { ok: "Invitación enviada." };
 }
 
+/**
+ * Genera un enlace de invitación para compartirlo por WhatsApp u otro medio (sin depender del correo de Supabase,
+ * que en el plan gratis solo entrega a miembros del equipo). El enlace es de un solo uso y expira.
+ */
+export async function createInviteLink(id: string): Promise<{ link?: string; error?: string }> {
+  await requireRole("nutriologo");
+  const supabase = await createClient();
+  const { data: p } = await supabase.from("patients").select("email, full_name, user_id").eq("id", id).single();
+  if (!p) return { error: "Paciente no encontrado." };
+  const site = process.env.NEXT_PUBLIC_SITE_URL;
+  if (!site) return { error: "Falta NEXT_PUBLIC_SITE_URL en el servidor." };
+
+  const admin = createAdminClient();
+  const redirectTo = `${site}/invitacion`;
+  // Cuenta nueva → invitación; cuenta ya creada (aún sin activar o con contraseña olvidada) → recuperación
+  let res = await admin.auth.admin.generateLink({ type: "invite", email: p.email, options: { data: { full_name: p.full_name }, redirectTo } });
+  let type: "invite" | "recovery" = "invite";
+  if (res.error) {
+    res = await admin.auth.admin.generateLink({ type: "recovery", email: p.email, options: { redirectTo } });
+    type = "recovery";
+  }
+  const hash = res.data?.properties?.hashed_token;
+  if (res.error || !hash) return { error: "No se pudo generar el enlace." };
+  await supabase.from("patients").update({ invited_at: new Date().toISOString() }).eq("id", id);
+  revalidatePath(`/consultorio/pacientes/${id}`);
+  return { link: `${site}/auth/confirm?token_hash=${encodeURIComponent(hash)}&type=${type}&next=${encodeURIComponent("/invitacion")}` };
+}
+
 export async function setPatientActive(id: string, active: boolean) {
   await requireRole("nutriologo");
   const supabase = await createClient();
-  await supabase.from("patients").update({ active }).eq("id", id);
+  const { error } = await supabase.from("patients").update({ active }).eq("id", id);
+  if (error && planError(error.message)) redirect("/consultorio/suscripcion?aviso=limite");
   revalidatePath(`/consultorio/pacientes/${id}`);
 }

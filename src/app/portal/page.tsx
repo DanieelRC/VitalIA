@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { ArrowRight, CalendarDays, Camera, ClipboardList, MessageCircle, Repeat, Scale, ShoppingBasket, Sparkles } from "lucide-react";
+import { QuickWeight, WelcomeTour } from "@/components/portal-extras";
+import { TodayMeals, type TodayMeal } from "@/components/today-meals";
+import { recipeImageUrls } from "@/lib/recipe-images";
 import { DayLog } from "@/components/day-log";
-import { Plate } from "@/components/plate";
 import { fmtDateTime, LinkButton } from "@/components/ui";
 import type { MealPlan } from "@/lib/data";
-import { FAMILY_LABEL, familyColor, plateSegments } from "@/lib/groups";
 import { createClient, requireRole } from "@/lib/supabase/server";
 import { CLINIC_TZ, todayLocal } from "@/lib/time";
 
@@ -16,12 +17,14 @@ export default async function PortalHome() {
   const s = await requireRole("paciente");
   const supabase = await createClient();
   const pid = s.patientId!;
-  const [plan, appt, last, unread, dayLog] = await Promise.all([
+  const [plan, appt, last, unread, dayLog, checks, me] = await Promise.all([
     supabase.from("meal_plans").select("name, kcal_target, meals, menu").eq("patient_id", pid).eq("status", "activo").maybeSingle(),
     supabase.from("appointments").select("starts_at, status").eq("patient_id", pid).gte("starts_at", new Date().toISOString()).neq("status", "cancelada").order("starts_at").limit(1).maybeSingle(),
     supabase.from("progress_logs").select("weight_kg, logged_at").eq("patient_id", pid).not("weight_kg", "is", null).order("logged_at", { ascending: false }).order("created_at", { ascending: false }).limit(2),
     supabase.from("messages").select("id", { count: "exact", head: true }).eq("patient_id", pid).is("read_at", null).neq("sender_id", s.userId),
     supabase.from("daily_logs").select("water_glasses, satiety, digestion, energy").eq("patient_id", pid).eq("day", todayLocal()).maybeSingle(),
+    supabase.from("meal_checks").select("meal, done, recipe_id").eq("patient_id", pid).eq("day", todayLocal()),
+    supabase.from("my_patient").select("allergies").maybeSingle(),
   ]);
 
   const now = new Date();
@@ -32,9 +35,35 @@ export default async function PortalHome() {
 
   const p = plan.data as Pick<MealPlan, "name" | "kcal_target" | "meals" | "menu"> | null;
   const todayMenu = (p?.menu ?? []).filter((m) => m.day === dow);
-  const recipeIds = [...new Set(todayMenu.map((m) => m.recipe_id).filter(Boolean))] as string[];
-  const { data: recs } = recipeIds.length ? await supabase.from("recipes").select("id, name").in("id", recipeIds) : { data: [] };
-  const rname = Object.fromEntries((recs ?? []).map((r) => [r.id, r.name]));
+  // Recetas disponibles: sirven para el platillo de hoy y para ofrecer cambios parecidos
+  type R = { id: string; name: string; meal_time: string; kcal: number | null; equivalents: Record<string, number>; image_path: string | null; ingredients: { name: string }[] | null };
+  const { data: recData } = p ? await supabase.from("recipes").select("id, name, meal_time, kcal, equivalents, image_path, ingredients") : { data: [] };
+  const recipes = (recData ?? []) as R[];
+  const byId = new Map(recipes.map((r) => [r.id, r]));
+  // Los cambios sugeridos nunca incluyen recetas con ingredientes a los que el paciente es alérgico
+  const plain = (t: string) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const allergens = ((me.data?.allergies ?? []) as string[]).map((a) => plain(a).trim().replace(/s$/, "")).filter((a) => a.length >= 3);
+  const safe = (r: R) => !allergens.some((a) => plain(`${r.name} ${(r.ingredients ?? []).map((i) => i.name).join(" ")}`).includes(a));
+  const timeOf = (name: string) => (/desayun/i.test(name) ? "desayuno" : /colaci|snack|merienda|refrigerio/i.test(name) ? "colacion" : /cena/i.test(name) ? "cena" : "comida");
+  const checkOf = new Map((checks.data ?? []).map((c) => [c.meal as number, c]));
+  const draft = (p?.meals ?? []).map((m, i) => {
+    const planned = todayMenu.find((x) => x.meal === i);
+    const check = checkOf.get(i);
+    const swapped = check?.recipe_id ? byId.get(check.recipe_id) : undefined;
+    const rec = swapped ?? (planned?.recipe_id ? byId.get(planned.recipe_id) : undefined);
+    const mealTime = rec?.meal_time ?? timeOf(m.name);
+    const goal = rec?.kcal ?? ((p?.kcal_target ?? 0) * m.kcal_pct) / 100;
+    const options = recipes.filter((r) => r.meal_time === mealTime && r.id !== rec?.id && safe(r) && r.kcal != null && goal > 0 && Math.abs(Number(r.kcal) - goal) / goal <= 0.3)
+      .sort((x, y) => Math.abs(Number(x.kcal) - goal) - Math.abs(Number(y.kcal) - goal)).slice(0, 4);
+    return { m, i, planned, check, rec, swapped: !!swapped, mealTime, options };
+  });
+  const covers = await recipeImageUrls(supabase, [...new Map(draft.flatMap((d) => [d.rec, ...d.options]).filter((r): r is R => !!r).map((r) => [r.id, r])).values()]);
+  const todayMeals: TodayMeal[] = draft.map((d) => ({
+    index: d.i, name: d.m.name, equivalents: d.m.equivalents, done: !!d.check?.done,
+    dish: d.rec ? { recipeId: d.rec.id, name: d.rec.name, cover: covers[d.rec.id] ?? null, mealTime: d.rec.meal_time, equivalents: d.rec.equivalents, swapped: d.swapped }
+      : d.planned?.text ? { recipeId: null, name: d.planned.text, cover: null, mealTime: d.mealTime, equivalents: null, swapped: false } : null,
+    options: d.options.map((o) => ({ id: o.id, name: o.name, kcal: o.kcal == null ? null : Number(o.kcal), cover: covers[o.id] ?? null, mealTime: o.meal_time, equivalents: o.equivalents })),
+  }));
 
   const w = last.data ?? [];
   const diff = w.length === 2 ? Math.round((Number(w[0].weight_kg) - Number(w[1].weight_kg)) * 10) / 10 : null;
@@ -46,46 +75,9 @@ export default async function PortalHome() {
         <p className="mt-2 text-muted first-letter:uppercase">{today}</p>
       </header>
 
+      <WelcomeTour />
       {p ? (
-        <section className="overflow-hidden rounded-3xl bg-field text-field-fg shadow-lift">
-          <div className="flex flex-wrap items-end justify-between gap-3 px-5 pt-5 sm:px-7 sm:pt-7">
-            <div>
-              <h2 className="font-display text-2xl font-bold tracking-tight">Hoy te toca</h2>
-              <p className="mt-1 text-sm text-field-muted">{p.name} · {Math.round(p.kcal_target)} kcal al día</p>
-            </div>
-            <Link href="/portal/mi-plan" className="group inline-flex items-center gap-1.5 rounded-full bg-field-2 px-4 py-2 text-sm font-semibold transition-colors hover:bg-field-fg hover:text-field">
-              Ver mi plan <ArrowRight className="size-4 transition-transform duration-300 ease-out-expo group-hover:translate-x-0.5" />
-            </Link>
-          </div>
-          <ol className="stagger mt-5 grid gap-px bg-field-2 sm:grid-cols-2 lg:grid-cols-3">
-            {p.meals.map((m, i) => {
-              const dish = todayMenu.find((x) => x.meal === i);
-              return (
-                <li key={i} className="flex gap-4 bg-field p-5 sm:px-7">
-                  <Plate segments={plateSegments(m.equivalents)} size={64} />
-                  <div className="min-w-0">
-                    <p className="font-display text-lg font-bold leading-tight">{m.name}</p>
-                    {dish && (
-                      <p className="mt-0.5 text-sm">
-                        {dish.recipe_id && rname[dish.recipe_id]
-                          ? <Link className="underline decoration-field-muted/60 hover:decoration-field-fg" href={`/portal/recetas/${dish.recipe_id}`}>{rname[dish.recipe_id]}</Link>
-                          : dish.text}
-                      </p>
-                    )}
-                    <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-field-muted">
-                      {plateSegments(m.equivalents).map((seg) => (
-                        <li key={seg.family} className="flex items-center gap-1.5">
-                          <span aria-hidden className="size-2 rounded-full" style={{ background: familyColor(seg.family) }} />
-                          <span className="tabular font-semibold text-field-fg">{seg.value}</span> {FAMILY_LABEL[seg.family]}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </li>
-              );
-            })}
-          </ol>
-        </section>
+        <TodayMeals meals={todayMeals} planName={p.name} kcal={p.kcal_target} />
       ) : (
         <section className="rounded-3xl bg-field p-7 text-field-fg shadow-lift">
           <h2 className="font-display text-2xl font-bold tracking-tight">Tu plan está en camino</h2>
@@ -98,6 +90,7 @@ export default async function PortalHome() {
       )}
 
       <DayLog initial={dayLog.data ?? { water_glasses: 0, satiety: null, digestion: null, energy: null }} />
+      <QuickWeight last={w[0]?.weight_kg ? Number(w[0].weight_kg) : null} />
 
       <section aria-label="Seguimiento" className="grid gap-3 sm:grid-cols-3">
         <StatusLink href="/portal/citas" icon={<CalendarDays className="size-5" />} label="Próxima cita"

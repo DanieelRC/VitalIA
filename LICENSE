@@ -1,0 +1,42 @@
+LICENCIA DE USO PROPIETARIA — VitalIA
+
+Copyright (c) 2026 Daniel (github.com/DanieelRC). Todos los derechos reservados.
+
+Este repositorio y todo su contenido —código fuente, código objeto, bases de datos, esquemas,
+migraciones, diseños, textos, documentación, marcas, logotipos y demás materiales (el «Software»)—
+son propiedad exclusiva del titular y están protegidos por la Ley Federal del Derecho de Autor,
+la Ley Federal de Protección a la Propiedad Industrial de los Estados Unidos Mexicanos y los
+tratados internacionales aplicables.
+
+1. Que el código sea visible públicamente NO concede licencia alguna. Se permite únicamente
+   consultarlo en el sitio donde se aloja.
+
+2. Queda prohibido, sin autorización previa y por escrito del titular:
+   a) copiar, reproducir, descargar para su uso, modificar, traducir o crear obras derivadas;
+   b) distribuir, publicar, sublicenciar, vender, arrendar o prestar el Software;
+   c) usarlo, ejecutarlo u ofrecerlo como servicio (SaaS) a terceros, en todo o en parte;
+   d) usarlo para desarrollar un producto o servicio competidor;
+   e) usarlo para entrenar o ajustar modelos de inteligencia artificial;
+   f) eliminar o alterar este aviso o cualquier aviso de derechos.
+
+3. Las contribuciones que se envíen a este repositorio se ceden al titular, salvo acuerdo
+   escrito en contrario.
+
+4. El Software se proporciona «tal cual», sin garantías de ningún tipo. En ningún caso el titular
+   será responsable de daños derivados del uso no autorizado del Software.
+
+5. Los componentes de terceros incluidos como dependencias conservan sus propias licencias.
+
+6. Esta licencia se rige por las leyes de los Estados Unidos Mexicanos. Para solicitar permisos
+   de uso o licencias comerciales, contacta al titular a través de github.com/DanieelRC.
+
+------------------------------------------------------------------------------------------------
+
+PROPRIETARY LICENSE — VitalIA
+
+Copyright (c) 2026 Daniel (github.com/DanieelRC). All rights reserved.
+
+Public visibility of this repository does not grant any license. No part of the Software may be
+copied, modified, distributed, used, hosted as a service, used to build a competing product, or
+used to train AI models without the prior written permission of the copyright holder. The
+Spanish version above prevails.

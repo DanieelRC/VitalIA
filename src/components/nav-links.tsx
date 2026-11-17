@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 import {
-  Bell, Camera, Menu, Repeat, ShoppingBasket, Wallet, X,
+  Bell, Camera, Menu, ShieldCheck, Repeat, ShoppingBasket, SlidersHorizontal, Wallet, X, LayoutDashboard, Building2, Receipt, ScrollText, Crown,
   Apple, BookOpen, Bot, CalendarDays, Calculator, ChartLine, ClipboardList, Dumbbell, FileText, FolderOpen, Home,
   MessageCircle, Pill, Salad, Scale, Settings, Soup, Table2, Users, UtensilsCrossed, type LucideIcon,
 } from "lucide-react";
@@ -12,7 +12,7 @@ import {
 const ICONS: Record<string, LucideIcon> = {
   home: Home, patients: Users, agenda: CalendarDays, messages: MessageCircle, calc: Calculator, bot: Bot, foods: Apple,
   equivalents: Table2, recipes: Soup, supplements: Pill, exercise: Dumbbell, library: BookOpen, reference: FileText,
-  settings: Settings, plan: Salad, recall: ClipboardList, progress: ChartLine, files: FolderOpen, scale: Scale, meal: UtensilsCrossed, basket: ShoppingBasket, swap: Repeat, camera: Camera, bell: Bell, wallet: Wallet,
+  settings: Settings, plan: Salad, recall: ClipboardList, progress: ChartLine, files: FolderOpen, scale: Scale, meal: UtensilsCrossed, basket: ShoppingBasket, swap: Repeat, camera: Camera, bell: Bell, wallet: Wallet, sliders: SlidersHorizontal, shield: ShieldCheck, dashboard: LayoutDashboard, clinics: Building2, receipt: Receipt, log: ScrollText, crown: Crown,
 };
 
 export type NavItem = { href: string; label: string; section?: string; icon?: string; short?: string };

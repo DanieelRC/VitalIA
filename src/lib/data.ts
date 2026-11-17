@@ -9,13 +9,20 @@ export type Patient = {
   sex: "M" | "F" | null; occupation: string | null; goal: string | null; pathologies: string[]; allergies: string[];
   medications: string | null; personal_history: string | null; family_history: string | null; gyneco_history: string | null;
   lifestyle: Record<string, string>; diet_history: string | null; active: boolean; invited_at: string | null;
-  privacy_accepted_at: string | null; created_at: string;
+  privacy_accepted_at: string | null; created_at: string; custom?: Record<string, string>; target_weight_kg?: number | null;
 };
+export type CustomField = { key: string; label: string; kind: "texto" | "numero" | "si_no" | "lista"; options: string[] };
+
+export const getCustomFields = cache(async (): Promise<CustomField[]> => {
+  const supabase = await createClient();
+  const { data } = await supabase.from("custom_fields").select("key, label, kind, options").order("sort");
+  return (data ?? []) as CustomField[];
+});
 
 export type MealPlan = {
   id: string; patient_id: string; name: string; status: "borrador" | "activo" | "archivado"; start_date: string | null;
   energy: Record<string, number | string>; kcal_target: number;
-  macros: { mode?: string; protein_pct?: number; fat_pct?: number; carbs_pct?: number; protein_gkg?: number; fat_gkg?: number; protein_g: number; fat_g: number; carbs_g: number };
+  macros: { mode?: string; protein_pct?: number; fat_pct?: number; carbs_pct?: number; protein_gkg?: number; fat_gkg?: number; protein_g: number; fat_g: number; carbs_g: number; locks?: Record<string, "pct" | "g" | null> };
   meals: { name: string; kcal_pct: number; equivalents: Record<string, number> }[];
   menu: { day: number; meal: number; recipe_id?: string | null; text?: string }[];
   recommendations: string | null; created_at: string;

@@ -47,7 +47,7 @@ export async function draftSoap(patientId: string, consultationId: string): Prom
 
   const [{ data: cons }, { data: settings }] = await Promise.all([
     supabase.from("consultations").select("status, consulted_at, reason, subjective, objective, assessment, plan").eq("id", consultationId).eq("patient_id", patientId).single(),
-    admin.from("ai_settings").select("*").eq("id", 1).single(),
+    admin.from("ai_settings").select("*").eq("clinic_id", s.clinicId!).single(),
   ]);
   if (!cons) return { error: "Consulta no encontrada." };
   if (cons.status === "firmada") return { error: "La nota ya está firmada." };

@@ -3,11 +3,13 @@ import { Clock, Users } from "lucide-react";
 import { Badge, Card, Empty, Input, Select } from "./ui";
 import { MEAL_TIMES, RECIPE_TAGS, groupLabel } from "@/lib/data";
 import type { Group } from "@/lib/nutrition";
+import { RecipeCover } from "./recipe-cover";
+import { MacroBar } from "./plate";
 
 export type Recipe = {
   id: string; name: string; description: string | null; meal_time: string; tags: string[]; servings: number; prep_minutes: number | null;
   ingredients: { name: string; quantity: string; unit: string }[]; steps: string[]; kcal: number | null; protein_g: number | null;
-  fat_g: number | null; carbs_g: number | null; equivalents: Record<string, number>; is_base: boolean;
+  fat_g: number | null; carbs_g: number | null; equivalents: Record<string, number>; is_base: boolean; image_path?: string | null;
 };
 
 export function RecipeFilters({ q, tag, meal }: { q?: string; tag?: string; meal?: string }) {
@@ -27,27 +29,38 @@ export function RecipeFilters({ q, tag, meal }: { q?: string; tag?: string; meal
   );
 }
 
-export function RecipeGrid({ recipes, base }: { recipes: Pick<Recipe, "id" | "name" | "description" | "meal_time" | "tags" | "kcal" | "prep_minutes" | "is_base">[]; base: string }) {
+export function RecipeGrid({ recipes, base }: { recipes: (Pick<Recipe, "id" | "name" | "description" | "meal_time" | "tags" | "kcal" | "prep_minutes" | "is_base"> & { equivalents?: Record<string, number>; cover?: string | null })[]; base: string }) {
   if (!recipes.length) return <Empty>No hay recetas con esos filtros.</Empty>;
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {recipes.map((r) => (
-        <Link key={r.id} href={`${base}/${r.id}`} className="rounded-xl border border-border bg-surface p-4 hover:border-primary">
-          <p className="text-xs text-muted">{MEAL_TIMES[r.meal_time]}{r.kcal ? ` · ${r.kcal} kcal` : ""}{r.prep_minutes ? ` · ${r.prep_minutes} min` : ""}</p>
-          <p className="mt-1 font-medium">{r.name}</p>
-          {r.description && <p className="mt-1 line-clamp-2 text-sm text-muted">{r.description}</p>}
-          <div className="mt-2 flex flex-wrap gap-1">{r.tags.map((t) => <Badge key={t} tone="info">{RECIPE_TAGS[t] ?? t}</Badge>)}</div>
+        <Link key={r.id} href={`${base}/${r.id}`} className="group overflow-hidden rounded-2xl border border-border bg-surface shadow-soft transition-[box-shadow,transform,border-color] duration-300 ease-out-expo hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lift">
+          <div className="relative overflow-hidden">
+            <RecipeCover name={r.name} mealTime={r.meal_time} equivalents={r.equivalents} src={r.cover} rounded={false} className="transition-transform duration-500 ease-out-expo group-hover:scale-[1.04]" />
+            <span className="absolute left-3 top-3 rounded-full bg-surface/90 px-2.5 py-1 text-[11px] font-semibold backdrop-blur">{MEAL_TIMES[r.meal_time]}</span>
+            {r.kcal != null && <span className="tabular absolute bottom-3 right-3 rounded-full bg-field px-2.5 py-1 text-[11px] font-bold text-field-fg">{Math.round(Number(r.kcal))} kcal</span>}
+          </div>
+          <div className="p-4">
+            <p className="font-display text-lg font-bold leading-tight">{r.name}</p>
+            {r.description && <p className="mt-1 line-clamp-2 text-sm text-muted">{r.description}</p>}
+            <div className="mt-2 flex flex-wrap items-center gap-1">
+              {r.prep_minutes ? <span className="mr-1 flex items-center gap-1 text-xs text-muted"><Clock className="size-3.5" />{r.prep_minutes} min</span> : null}
+              {r.tags.map((t) => <Badge key={t} tone="info">{RECIPE_TAGS[t] ?? t}</Badge>)}
+            </div>
+          </div>
         </Link>
       ))}
     </div>
   );
 }
 
-export function RecipeDetail({ r, groups }: { r: Recipe; groups: Group[] }) {
+export function RecipeDetail({ r, groups, cover, coverSlot }: { r: Recipe; groups: Group[]; cover?: string | null; coverSlot?: React.ReactNode }) {
   const gmap = Object.fromEntries(groups.map((g) => [g.code, g]));
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_300px]">
       <div className="flex flex-col gap-4">
+        <div className="overflow-hidden rounded-2xl border border-border shadow-soft"><RecipeCover name={r.name} mealTime={r.meal_time} equivalents={r.equivalents} src={cover} rounded={false} className="max-h-[420px]" /></div>
+        {coverSlot}
         <Card>
           {r.description && <p className="mb-3 text-muted">{r.description}</p>}
           <div className="mb-3 flex flex-wrap gap-3 text-sm text-muted">
@@ -66,12 +79,8 @@ export function RecipeDetail({ r, groups }: { r: Recipe; groups: Group[] }) {
       </div>
       <aside className="flex flex-col gap-4">
         <Card title="Aporte por porción">
-          <dl className="grid grid-cols-2 gap-y-1 text-sm">
-            <dt className="text-muted">Energía</dt><dd className="text-right font-semibold">{r.kcal ?? "—"} kcal</dd>
-            <dt className="text-muted">Proteína</dt><dd className="text-right">{r.protein_g ?? "—"} g</dd>
-            <dt className="text-muted">Lípidos</dt><dd className="text-right">{r.fat_g ?? "—"} g</dd>
-            <dt className="text-muted">Hidratos</dt><dd className="text-right">{r.carbs_g ?? "—"} g</dd>
-          </dl>
+          <p className="tabular font-display text-3xl font-extrabold">{r.kcal ?? "—"} <span className="text-sm font-semibold text-muted">kcal</span></p>
+          {r.protein_g != null && r.fat_g != null && r.carbs_g != null && <MacroBar className="mt-3" protein={Number(r.protein_g)} fat={Number(r.fat_g)} carbs={Number(r.carbs_g)} />}
         </Card>
         <Card title="Equivalentes por porción">
           <ul className="text-sm">

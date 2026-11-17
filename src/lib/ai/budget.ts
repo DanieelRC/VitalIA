@@ -29,6 +29,7 @@ export const LIMIT_MESSAGES: Record<string, string> = {
   daily: "Alcanzaste el límite diario de mensajes del asistente. Vuelve mañana o escribe a tu nutriólogo.",
   tokens: "Alcanzaste el límite mensual de uso del asistente. Escribe a tu nutriólogo por Mensajes.",
   budget: "El asistente alcanzó el presupuesto mensual del consultorio. Escribe a tu nutriólogo por Mensajes.",
+  plan: "La suscripción del consultorio no está vigente, así que el asistente está en pausa.",
   too_long: "Tu mensaje es demasiado largo. Resúmelo, por favor.",
   empty: "Escribe una pregunta.",
 };

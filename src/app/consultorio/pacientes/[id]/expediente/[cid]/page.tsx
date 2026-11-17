@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { ActionForm, ConfirmButton, SubmitButton } from "@/components/form";
 import { SoapDraftButton } from "@/components/soap-draft-button";
+import { SoapTemplatePicker } from "@/components/soap-template-picker";
 import { Alert, Badge, Card, Field, fmtDate, fmtDateTime, Input, Select, Textarea } from "@/components/ui";
 import { getLatestAnthropometry } from "@/lib/data";
 import { evaluationLabels } from "@/lib/nutrition";
@@ -21,11 +22,12 @@ const PES_SUGGESTIONS = [
 export default async function ConsultationPage({ params }: { params: Promise<{ id: string; cid: string }> }) {
   const { id, cid } = await params;
   const supabase = await createClient();
-  const [{ data: c }, { data: pes }, { data: addenda }, last] = await Promise.all([
+  const [{ data: c }, { data: pes }, { data: addenda }, last, { data: templates }] = await Promise.all([
     supabase.from("consultations").select("*").eq("id", cid).eq("patient_id", id).single(),
     supabase.from("pes_diagnoses").select("*").eq("consultation_id", cid).order("created_at"),
     supabase.from("consultation_addenda").select("*").eq("consultation_id", cid).order("created_at"),
     getLatestAnthropometry(id),
+    supabase.from("soap_templates").select("id, name, reason, subjective, objective, assessment, plan").order("name"),
   ]);
   if (!c) notFound();
   const signed = c.status === "firmada";
@@ -34,7 +36,7 @@ export default async function ConsultationPage({ params }: { params: Promise<{ i
     <div className="grid gap-4 lg:grid-cols-[1fr_300px]">
       <div className="flex flex-col gap-4">
         <Card title={<>Nota SOAP {signed ? <Badge tone="primary">Firmada {fmtDateTime(c.signed_at)}</Badge> : <Badge tone="warn">Borrador</Badge>}</>}>
-          {!signed && <div className="mb-4"><SoapDraftButton patientId={id} consultationId={cid} /></div>}
+          {!signed && <div className="mb-4 flex flex-wrap items-center gap-2"><SoapDraftButton patientId={id} consultationId={cid} /><SoapTemplatePicker templates={templates ?? []} /></div>}
           <ActionForm action={saveSoap.bind(null, id, cid)} className="grid gap-3">
             <fieldset disabled={signed} className="grid gap-3">
               <div className="grid gap-3 sm:grid-cols-2">

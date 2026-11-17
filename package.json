@@ -12,7 +12,10 @@
     "db:start": "supabase start -x vector,logflare,imgproxy,edge-runtime",
     "db:reset": "supabase db reset",
     "test:rls": "node --env-file=.env.local scripts/test-rls.mjs",
-    "create-admin": "node --env-file=.env.local scripts/create-admin.mjs"
+    "create-admin": "node --env-file=.env.local scripts/create-admin.mjs",
+    "test:billing": "node --env-file=.env.local scripts/test-billing.mjs",
+    "make-admin": "node --env-file=.env.local scripts/make-admin.mjs",
+    "test:admin": "node --env-file=.env.local scripts/test-admin.mjs"
   },
   "dependencies": {
     "@ai-sdk/react": "^4.0.177",
@@ -29,6 +32,7 @@
     "recharts": "^3.10.1",
     "resend": "^6.38.1",
     "server-only": "^0.0.1",
+    "stripe": "^23.1.0",
     "web-push": "^4.0.0",
     "zod": "^4.6.7"
   },
@@ -45,5 +49,6 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^3.2.7"
-  }
+  },
+  "license": "UNLICENSED"
 }

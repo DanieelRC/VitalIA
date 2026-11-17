@@ -3,26 +3,28 @@ import { z } from "zod";
 import { ActionForm, SubmitButton, type FormState } from "@/components/form";
 import { Alert, Card, Field, fmtDateTime, Input, PageHeader, Stat, Table, Td } from "@/components/ui";
 import { createClient, requireRole } from "@/lib/supabase/server";
+import { getSubscription } from "@/lib/plan";
+import { MfaSettings } from "@/components/mfa-settings";
 
 export const metadata = { title: "Ajustes" };
 
 async function saveClinic(_: FormState, fd: FormData): Promise<FormState> {
   "use server";
-  await requireRole("nutriologo");
+  const s = await requireRole("nutriologo");
   const t = (k: string) => String(fd.get(k) ?? "").trim().slice(0, 300) || null;
   const supabase = await createClient();
   let logo_path: string | undefined;
   const logo = fd.get("logo");
   if (logo instanceof File && logo.size > 0) {
     if (!["image/png", "image/jpeg"].includes(logo.type) || logo.size > 2e6) return { error: "Logo PNG o JPG de máximo 2 MB." };
-    logo_path = `logo.${logo.type === "image/png" ? "png" : "jpg"}`;
+    logo_path = `${s.clinicId}/logo.${logo.type === "image/png" ? "png" : "jpg"}`;
     const up = await supabase.storage.from("clinic").upload(logo_path, logo, { contentType: logo.type, upsert: true });
     if (up.error) return { error: up.error.message };
   }
   const { error } = await supabase.from("clinic_settings").update({
     name: t("name") ?? "Consultorio de Nutrición", nutritionist_name: t("nutritionist_name"), license: t("license"),
     address: t("address"), phone: t("phone"), email: t("email"), ...(logo_path ? { logo_path } : {}), updated_at: new Date().toISOString(),
-  }).eq("id", 1);
+  }).eq("clinic_id", s.clinicId!);
   if (error) return { error: error.message };
   revalidatePath("/consultorio/ajustes");
   return { ok: "Datos del consultorio guardados." };
@@ -30,7 +32,7 @@ async function saveClinic(_: FormState, fd: FormData): Promise<FormState> {
 
 async function saveAi(_: FormState, fd: FormData): Promise<FormState> {
   "use server";
-  await requireRole("nutriologo");
+  const s = await requireRole("nutriologo");
   const d = z.object({
     monthly_budget_usd: z.coerce.number().min(0).max(10000),
     pro_reserve_pct: z.coerce.number().min(0).max(100),
@@ -44,7 +46,7 @@ async function saveAi(_: FormState, fd: FormData): Promise<FormState> {
   }).safeParse(Object.fromEntries(fd));
   if (!d.success) return { error: "Valores fuera de rango: " + d.error.issues[0].path.join(".") };
   const supabase = await createClient();
-  const { error } = await supabase.from("ai_settings").update({ ...d.data, enabled: fd.get("enabled") === "on", updated_at: new Date().toISOString() }).eq("id", 1);
+  const { error } = await supabase.from("ai_settings").update({ ...d.data, enabled: fd.get("enabled") === "on", updated_at: new Date().toISOString() }).eq("clinic_id", s.clinicId!);
   if (error) return { error: error.message };
   revalidatePath("/consultorio/ajustes");
   return { ok: "Límites de IA guardados." };
@@ -55,13 +57,16 @@ export default async function Settings() {
   const supabase = await createClient();
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
   const [clinic, ai, usage, recent, profiles] = await Promise.all([
-    supabase.from("clinic_settings").select("*").eq("id", 1).single(),
-    supabase.from("ai_settings").select("*").eq("id", 1).single(),
+    supabase.from("clinic_settings").select("*").single(),
+    supabase.from("ai_settings").select("*").single(),
     supabase.from("ai_usage").select("user_id, role, input_tokens, output_tokens, cost_usd, status, created_at").gte("created_at", monthStart),
     supabase.from("ai_messages").select("user_id, role, content, blocked_reason, created_at").order("created_at", { ascending: false }).limit(40),
     supabase.from("patients").select("user_id, full_name").not("user_id", "is", null),
   ]);
   const c = clinic.data!, a = ai.data!;
+  const sub = await getSubscription();
+  const planCap = sub?.plan.ai_budget_usd ?? Infinity;
+  const budget = Math.min(Number(a.monthly_budget_usd), planCap);
   const names = Object.fromEntries((profiles.data ?? []).map((p) => [p.user_id, p.full_name]));
   const rows = usage.data ?? [];
   const spent = rows.reduce((x, r) => x + Number(r.cost_usd), 0);
@@ -71,13 +76,14 @@ export default async function Settings() {
     u.calls++; u.tokens += r.input_tokens + r.output_tokens; u.cost += Number(r.cost_usd);
     byUser.set(r.user_id, u);
   }
-  const pct = a.monthly_budget_usd ? Math.round((spent / a.monthly_budget_usd) * 100) : 0;
+  const pct = budget ? Math.round((spent / budget) * 100) : 0;
 
   return (
     <>
       <PageHeader title="Ajustes del consultorio e IA" />
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card title="Datos del consultorio (aparecen en los PDF)">
+        <MfaSettings />
+        <Card title="Datos del consultorio (aparecen en los PDF y en tu aviso de privacidad)">
           <ActionForm action={saveClinic} className="grid gap-3 sm:grid-cols-2">
             <Field label="Nombre del consultorio"><Input name="name" defaultValue={c.name} /></Field>
             <Field label="Nutriólogo(a)"><Input name="nutritionist_name" defaultValue={c.nutritionist_name ?? ""} /></Field>
@@ -93,7 +99,7 @@ export default async function Settings() {
         <Card title="Límites del asistente IA (Grok)">
           <ActionForm action={saveAi} className="grid grid-cols-2 gap-3">
             <label className="col-span-2 flex items-center gap-2 text-sm"><input type="checkbox" name="enabled" defaultChecked={a.enabled} /> Asistente activado (interruptor de emergencia)</label>
-            <Field label="Presupuesto mensual (USD)"><Input name="monthly_budget_usd" defaultValue={a.monthly_budget_usd} inputMode="decimal" /></Field>
+            <Field label="Presupuesto mensual (USD)" hint={Number.isFinite(planCap) ? `Tu plan ${sub!.plan.name} incluye hasta $${planCap} USD al mes; un valor mayor no aplica.` : undefined}><Input name="monthly_budget_usd" defaultValue={a.monthly_budget_usd} inputMode="decimal" /></Field>
             <Field label="Reserva para nutriólogo (%)" hint="Los pacientes se bloquean antes"><Input name="pro_reserve_pct" defaultValue={a.pro_reserve_pct} /></Field>
             <Field label="Mensajes/día por paciente"><Input name="patient_daily_messages" defaultValue={a.patient_daily_messages} /></Field>
             <Field label="Tokens/mes por paciente"><Input name="patient_monthly_tokens" defaultValue={a.patient_monthly_tokens} /></Field>
@@ -110,7 +116,7 @@ export default async function Settings() {
 
       <h2 className="mb-3 mt-6 font-semibold">Consumo del mes</h2>
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label="Gasto" value={`$${spent.toFixed(3)}`} hint={`${pct} % de $${a.monthly_budget_usd}`} />
+        <Stat label="Gasto" value={`$${spent.toFixed(3)}`} hint={`${pct} % de $${budget}`} />
         <Stat label="Llamadas" value={rows.length} />
         <Stat label="Tokens" value={rows.reduce((x, r) => x + r.input_tokens + r.output_tokens, 0).toLocaleString("es-MX")} />
         <Stat label="Errores" value={rows.filter((r) => r.status === "error").length} />

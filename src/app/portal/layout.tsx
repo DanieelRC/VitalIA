@@ -1,26 +1,32 @@
 import { AppShell } from "@/components/shell";
 import { requireRole } from "@/lib/supabase/server";
+import { ConsentBanner } from "@/components/consent-banner";
 
 const nav = [
   { href: "/portal", label: "Inicio", icon: "home" },
-  { href: "/portal/mi-plan", label: "Mi plan", short: "Plan", section: "Alimentación", icon: "plan" },
-  { href: "/portal/recetas", label: "Recetas", section: "Alimentación", icon: "recipes" },
-  { href: "/portal/super", label: "Lista del súper", section: "Alimentación", icon: "basket" },
-  { href: "/portal/intercambios", label: "Intercambios", section: "Alimentación", icon: "swap" },
-  { href: "/portal/comidas", label: "Mis comidas", section: "Alimentación", icon: "camera" },
-  { href: "/portal/r24h", label: "Recordatorio 24 h", section: "Alimentación", icon: "recall" },
-  { href: "/portal/rutinas", label: "Rutinas y suplementos", section: "Indicaciones", icon: "exercise" },
-  { href: "/portal/progreso", label: "Mi progreso", short: "Progreso", section: "Seguimiento", icon: "progress" },
-  { href: "/portal/citas", label: "Citas", section: "Seguimiento", icon: "agenda" },
-  { href: "/portal/mensajes", label: "Mensajes", section: "Seguimiento", icon: "messages" },
-  { href: "/portal/recordatorios", label: "Recordatorios", section: "Seguimiento", icon: "bell" },
-  { href: "/portal/asistente", label: "Asistente Vita", short: "Vita", section: "Ayuda", icon: "bot" },
-  { href: "/portal/material", label: "Material educativo", section: "Ayuda", icon: "library" },
-  { href: "/portal/archivos", label: "Mis archivos", section: "Ayuda", icon: "files" },
+  // Qué comer
+  { href: "/portal/mi-plan", label: "Mi plan", short: "Plan", section: "Qué comer", icon: "plan" },
+  { href: "/portal/recetas", label: "Recetas", section: "Qué comer", icon: "recipes" },
+  { href: "/portal/intercambios", label: "Intercambios", section: "Qué comer", icon: "swap" },
+  { href: "/portal/super", label: "Lista del súper", section: "Qué comer", icon: "basket" },
+  // Cómo voy
+  { href: "/portal/progreso", label: "Mi progreso", short: "Progreso", section: "Cómo voy", icon: "progress" },
+  { href: "/portal/comidas", label: "Fotos de mis comidas", section: "Cómo voy", icon: "camera" },
+  { href: "/portal/r24h", label: "Qué comí ayer", section: "Cómo voy", icon: "recall" },
+  // Mi nutriólogo
+  { href: "/portal/mensajes", label: "Mensajes", section: "Mi nutriólogo", icon: "messages" },
+  { href: "/portal/citas", label: "Citas", section: "Mi nutriólogo", icon: "agenda" },
+  { href: "/portal/rutinas", label: "Rutinas y suplementos", section: "Mi nutriólogo", icon: "exercise" },
+  { href: "/portal/material", label: "Material educativo", section: "Mi nutriólogo", icon: "library" },
+  { href: "/portal/archivos", label: "Mis archivos", section: "Mi nutriólogo", icon: "files" },
+  // Ayuda
+  { href: "/portal/asistente", label: "Pregúntale a Vita", short: "Vita", section: "Ayuda", icon: "bot" },
+  { href: "/portal/recordatorios", label: "Recordatorios", section: "Ayuda", icon: "bell" },
+  { href: "/portal/mis-datos", label: "Mis datos y privacidad", section: "Ayuda", icon: "shield" },
 ];
 const bottom = ["/portal", "/portal/mi-plan", "/portal/progreso", "/portal/mensajes", "/portal/asistente"].map((h) => nav.find((n) => n.href === h)!);
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
   const s = await requireRole("paciente");
-  return <AppShell nav={nav} bottomNav={bottom} user={s.fullName ?? s.email}>{children}</AppShell>;
+  return <AppShell nav={nav} bottomNav={bottom} user={s.fullName ?? s.email}><ConsentBanner patientId={s.patientId} />{children}</AppShell>;
 }

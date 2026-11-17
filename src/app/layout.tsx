@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Onest } from "next/font/google";
+import { Bricolage_Grotesque, Onest, STIX_Two_Text } from "next/font/google";
 import { SwRegister } from "@/components/sw-register";
 import "./globals.css";
 
@@ -18,6 +18,8 @@ import "./globals.css";
 */
 const display = Bricolage_Grotesque({ variable: "--font-display", subsets: ["latin"], display: "swap" });
 const body = Onest({ variable: "--font-body", subsets: ["latin"], display: "swap" });
+// Tipografía matemática: solo para fórmulas, para que se distingan del texto corrido
+const math = STIX_Two_Text({ variable: "--font-math", subsets: ["latin"], style: ["normal", "italic"], display: "swap" });
 
 export const metadata: Metadata = {
   title: { default: "VitalIA", template: "%s · VitalIA" },
@@ -36,7 +38,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es-MX">
-      <body className={`${display.variable} ${body.variable} antialiased`}>
+      <body className={`${display.variable} ${body.variable} ${math.variable} antialiased`}>
         {children}
         <SwRegister />
       </body>

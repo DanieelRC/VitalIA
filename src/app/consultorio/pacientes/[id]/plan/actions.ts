@@ -17,6 +17,7 @@ const planSchema = z.object({
     protein_pct: z.number().optional(), fat_pct: z.number().optional(), carbs_pct: z.number().optional(),
     protein_gkg: z.number().optional(), fat_gkg: z.number().optional(),
     protein_g: z.number(), fat_g: z.number(), carbs_g: z.number(),
+    locks: z.record(z.enum(["protein", "fat", "carbs"]), z.enum(["pct", "g"]).nullable()).optional(),
   }),
   meals: z.array(z.object({
     name: z.string().trim().min(1).max(60),

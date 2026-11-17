@@ -13,6 +13,7 @@ El color es información nutricional. Cada grupo de alimentos tiene un color fij
 - Macros: proteína = `--g-aoa`, lípidos = `--g-grasas`, hidratos = `--g-cereales`.
 
 ## Tipografía
+- Matemática: **STIX Two Text** cursiva (`--font-math`), exclusiva para fórmulas.
 - Títulos: **Bricolage Grotesque** (`font-display`), 700–800, tracking apretado.
 - Texto e interfaz: **Onest** (`font-sans`). Cifras con `tabular-nums` (`.tabular`).
 - Sin etiquetas en mayúsculas espaciadas sobre los títulos.
@@ -26,6 +27,15 @@ El color es información nutricional. Cada grupo de alimentos tiene un color fij
 - `GroupDot`: punto de color junto al nombre de cualquier grupo.
 - `MacroBar`: barra apilada P / L / HC.
 - `PlateMark` + `Wordmark`: marca.
+
+## Componentes de cálculo (estudio del nutriólogo)
+- **Fórmulas** (`components/formula.tsx`, clases `.formula` y `.formula-block`): toda ecuación va en STIX Two Text cursiva sobre un renglón con filete amarillo. Nunca se escribe una fórmula como texto corrido. `FormulaCard` une nombre, cifra grande, regla de rangos y la fórmula con los valores sustituidos.
+- **Regla de rangos** (`components/range-gauge.tsx`): franja por zonas (azul bajo, verde normal, amarillo límite, rojo alto) con un marcador. La zona activa va a color pleno y el resto atenuado; la zona siempre se nombra con texto, el color no va solo. Se usa en IMC, grasa, cintura, índices, laboratorios y adecuación.
+- **Estudio de macros** (`components/studio/macro-studio.tsx`): un deslizador por macronutriente sobre su rango aceptable, campos en %, g y g/kg, y candados (en % o en gramos). El veredicto de equilibrio se actualiza en vivo y avisa cuánta energía sobra o falta.
+- **Cuadro de equivalentes** (`components/studio/equivalents-board.tsx`): celdas con paso de ½ equivalente que toman el color de su grupo al tener valor; «Automático» propone, las pastillas de sugerencia corrigen lo que falta.
+- **Portada de receta** (`components/recipe-cover.tsx`): foto subida por el nutriólogo o, si no hay, ilustración generada con el plato de la receta sobre el color del tiempo de comida. No se usan fotos de bancos de imágenes.
+- **Hoy te toca** (`components/today-meals.tsx`): anillo de comidas hechas, barras por grupo (comido / falta) y botón «Ya comí» en verde lima sobre el campo.
+- **Tarjeta de cálculo del asistente** (`components/calc-card.tsx`): resultado exacto de una herramienta con etiqueta «Cálculo exacto»; el texto del modelo va aparte.
 
 ## Movimiento
 - Una entrada por página (`animate-enter`, vía `template.tsx`), listas en cascada corta (`.stagger`), y el plato que "se sirve" con barrido (`.plate-serve`).
