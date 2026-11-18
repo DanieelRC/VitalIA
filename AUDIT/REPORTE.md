@@ -75,7 +75,7 @@ Leyenda de evidencia: **V** = verificado en ejecución · **C** = confirmado ley
 - **Corrección.** Nunca entregar al nutriólogo un enlace de `recovery`. Si la cuenta existe, (a) solo reenviar por correo al titular (`resetPasswordForEmail`) y (b) solo si `patients.user_id` coincide con esa cuenta y su `profiles.role = 'paciente'`. Volver inmutable `patients.email` una vez que `user_id` no es nulo (trigger) y bloquear `generateLink` para correos que pertenezcan a `profiles.role = 'nutriologo'` o a `platform_admins`.
 
 #### A1 · Filtro de crisis incompleto (alta, verificada)
-- **Evidencia.** `ai_messages` del paciente de prueba: «quiero suicidarme» → `blocked_reason = emergency`, pero «me quiero morir» y «ya no quiero estar aquí» → `blocked_reason = null`. Fueron al modelo, que respondió con la «Línea de la Vida 55 5259 8121», distinta del 800 911 2000 que fija `EMERGENCY_REPLY`. Captura `19-vita-crisis-*.png`. Además, el bloqueo solo responde al paciente: ni el README ni el código alertan al nutriólogo.
+- **Evidencia.** `ai_messages` del paciente de prueba: «quiero suicidarme» → `blocked_reason = emergency`, pero «me quiero morir» y «ya no quiero estar aquí» → `blocked_reason = null`. Fueron al modelo, que respondió con la «Línea de la Vida 55 5259 8121», distinta del 800 911 2000 que fija `EMERGENCY_REPLY`. Captura `19-vita-crisis-*.png`. Corrección posterior: el inicio del consultorio sí muestra una «Alarma» por mensajes bloqueados, pero no había aviso proactivo y, si el paciente también tenía un mensaje de TCA, la alarma decía «riesgo alimentario» y ocultaba la urgencia.
 - **Impacto.** Seguridad del paciente: riesgo suicida sin escalamiento humano e información de crisis inventada por el modelo. Los mensajes de crisis no bloqueados también entran a la caché y al historial.
 - **Corrección.** Normalizar el texto (minúsculas, sin acentos ni repeticiones) y ampliar el léxico («morir», «no quiero estar», «desaparecer», «acabar con todo», «cortarme», «no vale la pena vivir»…). Agregar una segunda capa de clasificación barata. Al detectar crisis: crear un mensaje o alerta para el consultorio, marcar el par como `blocked_reason` y excluirlo de la caché. En `PATIENT_SYSTEM`, fijar el número oficial y prohibir otros. Pruebas unitarias en `guard.test.ts` con un corpus de frases positivas y negativas.
 
@@ -291,3 +291,17 @@ La migración se aplicó a mano en la base local; en producción falta `npx supa
 Verificado con `AUDIT/qa/takeover-after-fix2.log` (primer clic `invite`, segundo `recovery`, la toma de cuenta sigue bloqueada) y la captura `83-legitimo-enlace-0.png`.
 
 Queda pendiente: la lista `/consultorio/pacientes` sigue marcando «Activa» a cualquier expediente con cuenta vinculada (`src/app/consultorio/pacientes/page.tsx:30`).
+
+### A1 · Filtro de crisis de Vita: corregido
+
+- **`src/lib/ai/guard.ts`:** el texto se normaliza antes de buscar (minúsculas, sin acentos ni signos, letras estiradas reducidas y abreviaturas como «q» o «kiero»). El léxico ahora cubre «me quiero morir», «ya no quiero estar aquí», «estarían mejor sin mí», «acabar con todo», «no le veo sentido a la vida», cortes, pastillas y sobredosis, entre otros. Las negaciones («no me quiero morir joven») y los modismos («me muero de hambre», «muero por unos tacos», «está para morirse») no se bloquean.
+- **`src/app/api/chat/route.ts`:** el filtro corre antes del interruptor de IA y de los límites, así que una crisis siempre recibe el guion fijo, aunque la IA esté apagada.
+- **Aviso por correo:** `src/lib/ai/crisis.ts` (`notifyCrisis`) manda un correo al consultorio ante una urgencia, como máximo uno por paciente cada 12 h. El correo no incluye el texto del mensaje.
+- **`src/lib/alerts.ts`:** una urgencia ya no queda oculta por un aviso de TCA del mismo paciente.
+- **`src/lib/ai/prompts.ts`:** el único número de crisis permitido es 800 911 2000.
+
+**Verificación:**
+- `guard.test.ts`: corpus de 47 casos (positivos, negativos, modismos y negaciones). `features.test.ts` tiene un caso nuevo para la alarma. `npx vitest run`: 165/165.
+- E2E sin llaves de IA ni de correo: 5/5 frases con guion fijo y su `blocked_reason`, 0 llamadas al modelo y la alarma de urgencia visible en el inicio (`AUDIT/qa/vita-crisis-after-fix.json`, capturas `90-*` y `91-*`).
+- **No verificado:** el envío real del correo (se probó con `RESEND_API_KEY` vacía para no mandar correos reales).
+- **Pendiente:** el léxico sigue siendo una lista finita. Conviene una segunda capa de clasificación y una revisión clínica del corpus.

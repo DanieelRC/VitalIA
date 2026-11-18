@@ -97,6 +97,15 @@ describe("alertas de seguimiento", () => {
   it("detecta alarma e inactividad", () => expect(of("b")).toEqual(["alarma", "inactivo"]));
   it("no marca a quien acaba de activar su cuenta ni a quien no tiene cuenta", () => { expect(of("c")).toEqual([]); expect(of("d")).toEqual([]); });
   it("ordena las alarmas primero", () => expect(alerts[0].kind).toBe("alarma"));
+  it("una urgencia no queda oculta por un aviso de TCA del mismo paciente", () => {
+    const [a] = classifyAlerts({
+      now, patients: [patients[0]], activity: [], adherence: [], pendingPhotos: [],
+      flagged: [{ user_id: "ua", reason: "eating_disorder", at: days(1) }, { user_id: "ua", reason: "emergency", at: days(2) }],
+    });
+    expect(a.kind).toBe("alarma");
+    expect(a.text).toMatch(/urgencia/);
+    expect(a.text).toMatch(/riesgo alimentario/);
+  });
 });
 
 describe("pagos y paquetes", () => {

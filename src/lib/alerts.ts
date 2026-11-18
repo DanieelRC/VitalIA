@@ -23,8 +23,12 @@ export function classifyAlerts({ patients, activity, adherence, flagged, pending
 
     const flags = flagged.filter((f) => f.user_id === p.user_id);
     if (flags.length) {
+      // La urgencia (síntoma de alarma o ideas de hacerse daño) va primero: nunca la oculta un aviso de TCA
+      const urgent = flags.some((f) => f.reason === "emergency");
       const ed = flags.some((f) => f.reason === "eating_disorder");
-      add("alarma", ed ? "Mencionó al asistente conductas de riesgo alimentario" : "Describió al asistente un síntoma de urgencia");
+      add("alarma", urgent
+        ? `Escribió al asistente algo que podría ser una urgencia (síntoma de alarma o ideas de hacerse daño)${ed ? "; también mencionó conductas de riesgo alimentario" : ""}`
+        : "Mencionó al asistente conductas de riesgo alimentario");
     }
 
     const last3 = adherence.filter((a) => a.patient_id === p.id && a.adherence != null).sort((a, b) => b.logged_at.localeCompare(a.logged_at)).slice(0, 3);

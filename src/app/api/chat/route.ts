@@ -10,6 +10,7 @@ import { evolutionCard, patientCard } from "@/lib/ai/patient-cards";
 import { proTools } from "@/lib/ai/tools";
 import type { CalcResult } from "@/lib/ai/calc";
 import { maybeSendBudgetAlert } from "@/lib/ai/alerts";
+import { notifyCrisis } from "@/lib/ai/crisis";
 import { cacheKey, isFollowUp } from "@/lib/ai/cache";
 import { todayLocal } from "@/lib/time";
 import { sameOrigin } from "@/lib/security";
@@ -56,29 +57,32 @@ export async function POST(req: Request) {
   if (!text) return fail("empty", 400);
 
   const admin = createAdminClient();
+  const isPro = s.role === "nutriologo";
+
+  // 3. Filtro de emergencias / TCA para pacientes: respuesta fija, sin costo. Va antes del interruptor y de los
+  //    límites: un mensaje de crisis siempre recibe el guion de ayuda y avisa al consultorio, aunque la IA esté apagada.
+  if (!isPro) {
+    const screen = screenInput(text.slice(0, 4000));
+    if (screen.block) {
+      await admin.from("ai_messages").insert([
+        { user_id: s.userId, role: "user", content: text.slice(0, 4000), blocked_reason: screen.reason },
+        // Se marca también la respuesta para que el par completo quede fuera del historial del modelo
+        { user_id: s.userId, role: "assistant", content: screen.reply, blocked_reason: screen.reason },
+      ]);
+      if (screen.reason === "emergency") await notifyCrisis(admin, s.userId, s.clinicId);
+      return staticReply(screen.reply);
+    }
+  }
+
   const { data: settings } = await admin.from("ai_settings").select("*").eq("clinic_id", s.clinicId).single();
   if (!settings) return fail("disabled", 503);
   if (!settings.enabled) return fail("disabled", 503);
   if (text.length > settings.max_input_chars) return fail("too_long", 413);
 
-  const isPro = s.role === "nutriologo";
   // Copiloto de consulta: solo el nutriólogo puede abrir el hilo de un expediente (el paciente jamás envía patientId útil)
   const copilotId = isPro ? body.data.patientId ?? null : null;
   const model = isPro ? (process.env.XAI_MODEL_PRO ?? "grok-4.20-0309-non-reasoning") : (process.env.XAI_MODEL_PATIENT ?? "grok-4.20-0309-non-reasoning");
   const maxOutputTokens = isPro ? settings.pro_max_output_tokens : settings.max_output_tokens;
-
-  // 3. Filtro de emergencias / TCA para pacientes: respuesta fija, sin costo
-  if (!isPro) {
-    const screen = screenInput(text);
-    if (screen.block) {
-      await admin.from("ai_messages").insert([
-        { user_id: s.userId, role: "user", content: text, blocked_reason: screen.reason },
-        // Se marca también la respuesta para que el par completo quede fuera del historial del modelo
-        { user_id: s.userId, role: "assistant", content: screen.reply, blocked_reason: screen.reason },
-      ]);
-      return staticReply(screen.reply);
-    }
-  }
 
   // Sin llave no hay modelo (el filtro de emergencias de arriba sí responde)
   if (!process.env.XAI_API_KEY) return fail("disabled", 503);

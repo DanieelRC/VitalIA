@@ -1,0 +1,65 @@
+   ▲ Next.js 15.5.28 (Turbopack)
+   - Local:        http://localhost:3005
+   - Network:      http://192.168.0.185:3005
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · serverActions
+
+ ✓ Starting...
+ ✓ Compiled middleware in 469ms
+ ✓ Ready in 3s
+ ○ Compiling /login ...
+ ✓ Compiled /login in 4.4s
+ GET /login 200 in 5264ms
+ GET /login 200 in 330ms
+ ○ Compiling / ...
+ ✓ Compiled / in 750ms
+ GET / 200 in 1163ms
+ POST /login 303 in 1566ms
+ ○ Compiling /portal ...
+ ✓ Compiled /portal in 3s
+ GET /portal 200 in 3028ms
+ POST /api/chat 503 in 4015ms
+ GET /portal 200 in 1451ms
+ ○ Compiling /portal/asistente ...
+ ✓ Compiled /portal/asistente in 2.6s
+ GET /portal/asistente 200 in 3534ms
+ POST /api/chat 200 in 490ms
+ GET /portal/asistente 200 in 941ms
+ POST /api/chat 200 in 514ms
+ GET /portal/asistente 200 in 897ms
+ POST /api/chat 200 in 500ms
+ GET /portal/asistente 200 in 947ms
+ POST /api/chat 200 in 500ms
+ GET /portal/asistente 200 in 1061ms
+ POST /api/chat 200 in 463ms
+ GET /login 200 in 368ms
+ GET / 200 in 333ms
+ POST /login 303 in 652ms
+ ○ Compiling /consultorio ...
+ ✓ Compiled /consultorio in 537ms
+ GET /consultorio 200 in 1640ms
+ GET /consultorio 200 in 1702ms
+ ✓ Compiled in 569ms
+ GET /login 200 in 277ms
+ GET / 200 in 440ms
+ POST /login 303 in 788ms
+ POST /api/chat 503 in 688ms
+ GET /portal 200 in 801ms
+ GET /portal 200 in 861ms
+ GET /portal/asistente 200 in 978ms
+ POST /api/chat 200 in 488ms
+ GET /portal/asistente 200 in 579ms
+ POST /api/chat 200 in 441ms
+ GET /portal/asistente 200 in 607ms
+ POST /api/chat 200 in 426ms
+ GET /portal/asistente 200 in 685ms
+ POST /api/chat 200 in 440ms
+ GET /portal/asistente 200 in 556ms
+ POST /api/chat 200 in 412ms
+ GET /login 200 in 261ms
+ GET / 200 in 305ms
+ POST /login 303 in 738ms
+ ✓ Compiled /consultorio in 266ms
+ GET /consultorio 200 in 2669ms
+ GET /consultorio 200 in 2704ms
