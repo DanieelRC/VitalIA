@@ -2,7 +2,7 @@ import "server-only";
 import { sendEmail } from "@/lib/email";
 import { createAdminClient } from "@/lib/supabase/server";
 
-/** Envía el enlace para confirmar el correo de un nutriólogo. En desarrollo sin Resend, lo escribe en la consola. */
+/** Envía el enlace para confirmar el correo de un nutriólogo. En desarrollo sin proveedor de correo, lo escribe en la consola. */
 export async function sendConfirmation(email: string) {
   const admin = createAdminClient();
   const { data, error } = await admin.auth.admin.generateLink({ type: "magiclink", email });

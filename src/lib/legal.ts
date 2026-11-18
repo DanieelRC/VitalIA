@@ -11,13 +11,13 @@ export const LEGAL = {
   company: process.env.LEGAL_COMPANY ?? "[Razón social de VitalIA, pendiente]",
   address: process.env.LEGAL_ADDRESS ?? "[Domicilio fiscal, pendiente]",
   email: process.env.LEGAL_EMAIL ?? "[correo de privacidad, pendiente]",
-  updated: "17 de noviembre de 2026",
-  versions: { aviso_vitalia: "2026-11-17.2", terminos: "2026-11-17.2", aviso_paciente: "2026-11-17" },
+  updated: "18 de noviembre de 2026",
+  versions: { aviso_vitalia: "2026-11-18", terminos: "2026-11-18", aviso_paciente: "2026-11-18" },
   /** Proveedores que tratan datos por cuenta de VitalIA (subencargados) */
   processors: [
     { name: "Supabase Inc.", role: "Base de datos, autenticación y almacenamiento de archivos", country: "Estados Unidos" },
     { name: "Vercel Inc.", role: "Alojamiento y ejecución de la aplicación", country: "Estados Unidos" },
-    { name: "Resend (Plus Five Five, Inc.)", role: "Envío de correos (invitaciones, recordatorios)", country: "Estados Unidos" },
+    { name: "Google LLC (Gmail)", role: "Envío de correos (invitaciones, recordatorios y avisos)", country: "Estados Unidos" },
     { name: "xAI Corp.", role: "Modelo de inteligencia artificial del asistente y del copiloto", country: "Estados Unidos" },
     { name: "Stripe, Inc.", role: "Procesamiento de pagos con tarjeta de la suscripción", country: "Estados Unidos" },
     { name: "Facturapi", role: "Emisión y timbrado de facturas electrónicas (CFDI)", country: "México" },

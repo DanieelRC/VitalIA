@@ -47,7 +47,7 @@ export default async function Config() {
             <ul>
               <Check label="Llave de Facturapi" ok={cfdiConfigured()} detail={!env.FACTURAPI_KEY ? "Pon FACTURAPI_KEY en .env.local" : facturapiTest ? "Modo prueba: facturas sin validez fiscal" : "Llave live"} warn={!facturapiTest && cfdiConfigured()} />
               <Check label="Datos del emisor (VitalIA)" ok={!LEGAL.draft} detail={`${LEGAL.company} · ${LEGAL.address}`} warn={LEGAL.draft} />
-              <Check label="Correo de envío (Resend)" ok={!!env.RESEND_API_KEY && !!env.EMAIL_FROM} detail="Confirmaciones, avisos de renovación y de cobro rechazado" />
+              <Check label={env.SMTP_USER ? "Correo de envío (SMTP)" : "Correo de envío (Resend)"} ok={(!!env.SMTP_USER && !!env.SMTP_PASSWORD) || (!!env.RESEND_API_KEY && !!env.EMAIL_FROM)} detail="Confirmaciones, avisos de renovación y de cobro rechazado" />
               <Check label="Cron diario" ok={(env.CRON_SECRET ?? "").length >= 16} detail="Cierra periodos y envía avisos de renovación" />
             </ul>
             <p className="mt-3 text-xs text-muted">Los datos fiscales de emisor se configuran en el panel de Facturapi; aquí solo se muestra lo que usan los avisos legales.</p>

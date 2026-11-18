@@ -32,7 +32,7 @@
 1. **Completar datos del responsable** en `src/lib/legal.ts` (o variables `LEGAL_COMPANY`, `LEGAL_ADDRESS`, `LEGAL_EMAIL`) y poner `draft: false`.
    Recomendado: operar mediante una sociedad (p. ej., SAS) y un correo exclusivo de privacidad.
 2. **Revisión del abogado** de `/privacidad`, `/terminos` (incluye limitación de responsabilidad y jurisdicción `[ciudad, pendiente]`) y del aviso de pacientes (`src/components/patient-privacy-notice.tsx`).
-3. **Contratos con proveedores (subencargados):** aceptar/firmar el DPA de Supabase, Vercel, Resend y xAI; guardar copia.
+3. **Contratos con proveedores (subencargados):** aceptar/firmar el DPA de Supabase, Vercel, Google (Gmail) y xAI; guardar copia.
    - xAI: confirmar retención de datos de la API y activar *Zero Data Retention* si está disponible para la cuenta.
    - Considerar alojar la base de datos en una región y proveedor con DPA explícito para datos de salud.
 4. **Antes de cobrar** (el código ya está; falta configurarlo):
@@ -75,7 +75,7 @@
 | Paciente | salud (sensibles): antecedentes, mediciones, laboratorios, fotos, registros, notas | Nutriólogo | consentimiento expreso y por escrito (art. 8) | 5 años desde el último acto; en menores, desde la mayoría de edad |
 | Visitante | IP, navegador (seguridad) | VitalIA | interés legítimo / tácito | corto plazo (registros) |
 
-Subencargados: Supabase, Vercel, Resend, xAI y Stripe (EE. UU.); Facturapi (México). Lista en `LEGAL.processors` (`src/lib/legal.ts`), que alimenta ambos avisos.
+Subencargados: Supabase, Vercel, Google (Gmail), xAI y Stripe (EE. UU.); Facturapi (México). Lista en `LEGAL.processors` (`src/lib/legal.ts`), que alimenta ambos avisos.
 
 ## Plan ante una vulneración de seguridad (art. 19)
 

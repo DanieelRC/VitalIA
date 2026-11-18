@@ -2,7 +2,7 @@
 
 Plataforma de consulta nutricional para un consultorio: portal del **nutriólogo** y del **paciente**.
 
-**Stack:** Next.js 15 (App Router) · Supabase (Postgres + RLS, Auth, Storage, Realtime) · Tailwind 4 · AI SDK + Grok (xAI) · react-pdf · Resend · PWA.
+**Stack:** Next.js 15 (App Router) · Supabase (Postgres + RLS, Auth, Storage, Realtime) · Tailwind 4 · AI SDK + Grok (xAI) · react-pdf · Gmail (SMTP) o Resend · PWA.
 
 ## Módulos
 

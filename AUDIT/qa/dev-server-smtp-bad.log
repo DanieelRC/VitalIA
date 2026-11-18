@@ -1,0 +1,19 @@
+   ▲ Next.js 15.5.28 (Turbopack)
+   - Local:        http://localhost:3009
+   - Network:      http://192.168.0.185:3009
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · serverActions
+
+ ✓ Starting...
+ ✓ Compiled middleware in 312ms
+ ✓ Ready in 2.7s
+ ○ Compiling /registro ...
+ ✓ Compiled /registro in 3.9s
+ GET /registro 200 in 4744ms
+ GET /registro 200 in 289ms
+[email] El servidor SMTP rechazó el envío: EAUTH 535 Invalid login: 535 5.7.8 Authentication credentials invalid
+ ○ Compiling /registro/confirma ...
+ ✓ Compiled /registro/confirma in 551ms
+ GET /registro/confirma?correo=qa-smtp-1794965070%40example.test 200 in 727ms
+ POST /registro 303 in 1317ms

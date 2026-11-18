@@ -427,3 +427,35 @@ enabled = true
 # formatted with uppercase keywords, indent 2, max width 180, trailing commas,
 # and column/key alignment. Set to "null" to emit raw, unformatted SQL.
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":180,\"commaStyle\":\"trailing\"}"
+
+# ============ Producción (proyecto VitalIA en Supabase Cloud) ============
+# `npx supabase config push` aplica la configuración de arriba con estas diferencias para producción.
+# Revisa antes con `npx supabase config diff` (solo lectura). Las plantillas de correo, la confirmación de
+# correo, el registro desactivado y la verificación en dos pasos (TOTP) se heredan de la configuración base.
+[remotes.production]
+project_id = "dscxznmgfaxzbitohnvf"
+
+[remotes.production.auth]
+site_url = "https://vitalia-virid.vercel.app"
+additional_redirect_urls = ["https://vitalia-virid.vercel.app/**"]
+
+# Se conservan los valores actuales de producción (no los de desarrollo)
+[remotes.production.db.pooler]
+default_pool_size = 15
+max_client_conn = 200
+
+[remotes.production.storage.vector]
+enabled = false
+
+# SMTP propio: invitaciones y recuperación de contraseña desde la cuenta de Gmail dedicada a VitalIA (contraseña de
+# aplicación). También desbloquea las plantillas en español en el plan gratis. Para aplicarlo: descomenta, pon la
+# cuenta en `user` y `admin_email`, exporta SMTP_PASSWORD en tu terminal y corre `npx supabase config push`.
+# Nunca escribas la contraseña aquí.
+[remotes.production.auth.email.smtp]
+enabled = true
+host = "smtp.gmail.com"
+port = 465
+user = "support.vitalia@gmail.com"
+pass = "env(SMTP_PASSWORD)"
+admin_email = "support.vitalia@gmail.com"
+sender_name = "VitalIA"

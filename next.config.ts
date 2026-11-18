@@ -22,7 +22,7 @@ const csp = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["@react-pdf/renderer", "web-push"],
+  serverExternalPackages: ["@react-pdf/renderer", "web-push", "nodemailer"],
   poweredByHeader: false,
   experimental: {
     serverActions: { bodySizeLimit: "10mb" },
