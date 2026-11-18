@@ -1,0 +1,11 @@
+Confirma tu correo
+
+Hola. Tu consultorio en VitalIA está casi listo. Confirma que este correo es tuyo para activarlo y empezar tu periodo de prueba.
+
+Confirmar mi correo: https://vitalia-virid.vercel.app/auth/confirm?token_hash=abc123&type=magiclink&next=%2Fconsultorio%3Fbienvenida%3D1
+
+El enlace caduca en 1 hora. Si no creaste una cuenta en VitalIA, ignora este mensaje.
+
+--
+Recibes este correo porque se registró un consultorio con esta dirección.
+VitalIA · Software para nutriólogos

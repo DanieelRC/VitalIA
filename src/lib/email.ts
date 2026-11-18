@@ -23,13 +23,15 @@ function smtpTransport() {
   return smtp;
 }
 
-export async function sendEmail(to: string, subject: string, html: string): Promise<{ skipped: true } | { error?: string }> {
+/** `content` viene de renderEmail (HTML + texto plano); un string se toma como HTML. */
+export async function sendEmail(to: string, subject: string, content: string | { html: string; text: string }): Promise<{ skipped: true } | { error?: string }> {
+  const { html, text } = typeof content === "string" ? { html: content, text: undefined } : content;
   const transport = smtpTransport();
   if (transport) {
     // Gmail solo envía desde la propia cuenta (o un alias verificado): por omisión, «VitalIA <cuenta>»
     const from = process.env.EMAIL_FROM || `VitalIA <${process.env.SMTP_USER}>`;
     try {
-      await transport.sendMail({ from, to, subject, html });
+      await transport.sendMail({ from, to, subject, html, text });
       return {};
     } catch (e) {
       const err = e as { code?: string; responseCode?: number; message?: string };
@@ -40,7 +42,7 @@ export async function sendEmail(to: string, subject: string, html: string): Prom
 
   if (!process.env.RESEND_API_KEY || !process.env.EMAIL_FROM) return { skipped: true };
   const resend = new Resend(process.env.RESEND_API_KEY);
-  const { error } = await resend.emails.send({ from: process.env.EMAIL_FROM, to, subject, html });
+  const { error } = await resend.emails.send({ from: process.env.EMAIL_FROM, to, subject, html, ...(text ? { text } : {}) });
   if (error) console.error("[email] Resend rechazó el envío:", error.name, error.message.slice(0, 200));
   return { error: error?.message };
 }

@@ -1,0 +1,13 @@
+[Presupuesto de IA]
+Tu asistente de IA llegó al 80 % del presupuesto
+
+Al llegar al 100 %, el asistente se pausa para tus pacientes; tú conservas una reserva para seguir usándolo en consulta. Puedes ajustar el presupuesto cuando quieras.
+Gasto del mes: $8.12 USD
+Presupuesto: $10.00 USD
+
+Ir a Ajustes e IA: https://vitalia-virid.vercel.app/consultorio/ajustes
+
+
+--
+Recibes este aviso una vez al mes como responsable del consultorio.
+VitalIA · Software para nutriólogos

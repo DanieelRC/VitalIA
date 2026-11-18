@@ -1,8 +1,7 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 
 /** Escapa texto para insertarlo en HTML (correos). */
-export const escapeHtml = (s: string) =>
-  s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+export { escapeHtml } from "./email-layout";
 
 export const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
 

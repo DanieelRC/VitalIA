@@ -447,6 +447,11 @@ max_client_conn = 200
 [remotes.production.storage.vector]
 enabled = false
 
+# Correos de Auth por hora para todo el proyecto (invitaciones, recuperación, confirmaciones). El valor base (2) es de
+# desarrollo. Gmail permite ~500 destinatarios al día, así que 30/h (≈720/día como máximo teórico) queda dentro del margen.
+[remotes.production.auth.rate_limit]
+email_sent = 30
+
 # SMTP propio: invitaciones y recuperación de contraseña desde la cuenta de Gmail dedicada a VitalIA (contraseña de
 # aplicación). También desbloquea las plantillas en español en el plan gratis. Para aplicarlo: descomenta, pon la
 # cuenta en `user` y `admin_email`, exporta SMTP_PASSWORD en tu terminal y corre `npx supabase config push`.

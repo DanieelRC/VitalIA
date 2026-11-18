@@ -1,0 +1,13 @@
+[Urgente]
+Un paciente podría necesitar atención
+
+Ana Prueba escribió al asistente Vita un mensaje que podría indicar una urgencia (síntoma de alarma o ideas de hacerse daño).
+Vita le respondió con el 911 y la Línea de la Vida (800 911 2000). Te sugerimos contactarlo lo antes posible.
+
+Abrir sus mensajes: https://vitalia-virid.vercel.app/consultorio/mensajes/00000000-0000-0000-0000-000000000000
+
+Por privacidad, este correo no incluye el contenido del mensaje. Recibirás como máximo un aviso por paciente cada 12 horas.
+
+--
+Recibes este aviso porque eres el consultorio de este paciente en VitalIA.
+VitalIA · Software para nutriólogos

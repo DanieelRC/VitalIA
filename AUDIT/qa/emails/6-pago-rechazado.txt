@@ -1,0 +1,12 @@
+[Pago rechazado]
+No pudimos cobrar tu suscripción
+
+No pudimos procesar el pago de la suscripción de Nutrición Integral Daniela.
+Volveremos a intentarlo en los próximos días. Para evitar que se suspenda el acceso, revisa o cambia tu tarjeta.
+
+Revisar mi método de pago: https://vitalia-virid.vercel.app/consultorio/suscripcion
+
+
+--
+Recibes este correo como titular de la suscripción de tu consultorio en VitalIA.
+VitalIA · Software para nutriólogos

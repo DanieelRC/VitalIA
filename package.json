@@ -15,7 +15,8 @@
     "create-admin": "node --env-file=.env.local scripts/create-admin.mjs",
     "test:billing": "node --env-file=.env.local scripts/test-billing.mjs",
     "make-admin": "node --env-file=.env.local scripts/make-admin.mjs",
-    "test:admin": "node --env-file=.env.local scripts/test-admin.mjs"
+    "test:admin": "node --env-file=.env.local scripts/test-admin.mjs",
+    "email:templates": "node --no-warnings scripts/email-templates.mjs"
   },
   "dependencies": {
     "@ai-sdk/react": "^4.0.177",

@@ -1,0 +1,16 @@
+[Recordatorio]
+Tu cita es pronto
+
+Hola Ana, te recordamos tu próxima consulta de nutrición.
+Fecha y hora: jueves, 20 de noviembre de 2026, 10:00
+Consultorio: Nutrición Integral Daniela
+Dirección: Av. Reforma 123, Col. Centro, CDMX
+Teléfono: 55 1234 5678
+
+Ver mis citas: https://vitalia-virid.vercel.app/portal/citas
+
+Si no puedes asistir, cancélala desde tu portal para liberar el horario.
+
+--
+Recibes este correo porque tienes una cita confirmada con tu nutriólogo en VitalIA.
+VitalIA · Software para nutriólogos

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { sendEmail } from "@/lib/email";
+import { renderEmail } from "@/lib/email-layout";
 import { cronAuthorized, escapeHtml } from "@/lib/security";
 import { createAdminClient } from "@/lib/supabase/server";
 
@@ -27,13 +28,21 @@ export async function GET(req: Request) {
     const { data: cs } = await admin.from("clinic_settings").select("email").eq("clinic_id", c.id).maybeSingle();
     if (!cs?.email) continue;
     const plan = c.plans as unknown as { name: string; price_mxn: number | null } | null;
-    const price = plan?.price_mxn != null ? ` por <strong>$${Number(plan.price_mxn).toLocaleString("es-MX")} MXN (IVA incluido)</strong>` : "";
     const site = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-    const res = await sendEmail(cs.email, "Tu suscripción de VitalIA se renueva pronto",
-      `<p>Hola. La suscripción de <strong>${escapeHtml(c.name)}</strong> (plan ${escapeHtml(plan?.name ?? c.plan)}) se renovará automáticamente el
-       <strong>${fmt(c.current_period_end!)}</strong>${price}.</p>
-       <p>Si no quieres renovarla, puedes cancelarla en cualquier momento y sin penalización desde
-       <a href="${site}/consultorio/suscripcion">Suscripción</a>. Seguirás teniendo acceso hasta el final del periodo pagado.</p>`);
+    const details: [string, string][] = [["Plan", plan?.name ?? c.plan], ["Fecha de renovación", fmt(c.current_period_end!)]];
+    if (plan?.price_mxn != null) details.push(["Importe", `$${Number(plan.price_mxn).toLocaleString("es-MX")} MXN (IVA incluido)`]);
+    const res = await sendEmail(cs.email, "Tu suscripción de VitalIA se renueva pronto", renderEmail({
+      preheader: `Se renovará automáticamente el ${fmt(c.current_period_end!)}.`,
+      badge: { label: "Aviso de renovación", tone: "info" },
+      title: "Tu suscripción se renueva pronto",
+      paragraphs: [
+        `La suscripción de <strong>${escapeHtml(c.name)}</strong> se renovará automáticamente.`,
+        "Si no quieres renovarla, puedes cancelarla en cualquier momento y sin penalización. Seguirás teniendo acceso hasta el final del periodo pagado.",
+      ],
+      details,
+      cta: { label: "Administrar mi suscripción", url: `${site}/consultorio/suscripcion` },
+      footer: "Te avisamos al menos 5 días antes de cada cobro automático, como lo pide la Ley Federal de Protección al Consumidor.",
+    }));
     if ("error" in res && res.error) continue;
     await admin.from("clinics").update({ renewal_notice_for: c.current_period_end }).eq("id", c.id);
     notified++;

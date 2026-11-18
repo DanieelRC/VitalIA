@@ -1,7 +1,7 @@
 import "server-only";
 import type Stripe from "stripe";
 import { sendEmail } from "@/lib/email";
-import { escapeHtml } from "@/lib/security";
+import { escapeHtml, renderEmail } from "@/lib/email-layout";
 import { createAdminClient } from "@/lib/supabase/server";
 import { issueCfdi } from "./cfdi";
 import { mapSubscription, satPaymentForm } from "./map";
@@ -75,10 +75,17 @@ async function paymentFailed(inv: Stripe.Invoice) {
   const { data: cs } = await admin.from("clinic_settings").select("email, name").eq("clinic_id", clinic.id).maybeSingle();
   if (!cs?.email) return;
   const site = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-  await sendEmail(cs.email, "No pudimos cobrar tu suscripción de VitalIA",
-    `<p>Hola. No pudimos procesar el pago de la suscripción de <strong>${escapeHtml(cs.name ?? "tu consultorio")}</strong>.</p>
-     <p>Volveremos a intentarlo en los próximos días. Para evitar que se suspenda el acceso, revisa o cambia tu tarjeta en
-     <a href="${site}/consultorio/suscripcion">Suscripción</a>.</p>`);
+  await sendEmail(cs.email, "No pudimos cobrar tu suscripción de VitalIA", renderEmail({
+    preheader: "Revisa tu método de pago para no perder el acceso.",
+    badge: { label: "Pago rechazado", tone: "danger" },
+    title: "No pudimos cobrar tu suscripción",
+    paragraphs: [
+      `No pudimos procesar el pago de la suscripción de <strong>${escapeHtml(cs.name ?? "tu consultorio")}</strong>.`,
+      "Volveremos a intentarlo en los próximos días. Para evitar que se suspenda el acceso, revisa o cambia tu tarjeta.",
+    ],
+    cta: { label: "Revisar mi método de pago", url: `${site}/consultorio/suscripcion` },
+    footer: "Recibes este correo como titular de la suscripción de tu consultorio en VitalIA.",
+  }));
 }
 
 /** Al volver de Checkout: confirma la suscripción y el primer pago sin esperar al webhook. */
