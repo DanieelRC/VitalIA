@@ -118,6 +118,8 @@ export async function setPassword(_: FormState, fd: FormData): Promise<FormState
 
   const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
   if (error) return { error: "No se pudo guardar la contraseña. Usa al menos 8 caracteres con letras y números, o pide un enlace nuevo." };
+  // Marca de activación real (app_metadata solo la escribe el servidor): abrir el enlace no basta, hay que crear la contraseña
+  await createAdminClient().auth.admin.updateUserById(user.id, { app_metadata: { ...user.app_metadata, password_set: true } });
   redirect("/");
 }
 

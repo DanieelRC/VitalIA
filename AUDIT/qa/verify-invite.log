@@ -1,0 +1,11 @@
+ENLACE http://localhost:3011/auth/confirm?token_hash=<…>&type=invite&next=%2Finvitacion
+{
+ "vista_previa_HEAD": 200,
+ "vista_previa_GET": 200,
+ "tarjeta_tras_vista_previa": "Invitación enviada 17 nov 2026, 8:56 p.m. · el paciente todavía no entra a su portal.",
+ "tras_continuar": "/invitacion",
+ "tarjeta_antes_de_contraseña": "Invitación enviada 17 nov 2026, 8:56 p.m. · el paciente todavía no entra a su portal.",
+ "paciente_entra_a": "/portal",
+ "tarjeta_final": "Cuenta activa · aviso de privacidad aceptado 17 nov 2026.",
+ "reusar_enlace": "/login?error=enlace"
+}

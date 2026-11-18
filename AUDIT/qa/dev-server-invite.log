@@ -1,0 +1,66 @@
+   ▲ Next.js 15.5.28 (Turbopack)
+   - Local:        http://localhost:3011
+   - Network:      http://192.168.0.185:3011
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · serverActions
+
+ ✓ Starting...
+ ○ Compiling middleware ...
+ ✓ Compiled middleware in 650ms
+ ✓ Ready in 4.9s
+ ○ Compiling /login ...
+ ✓ Compiled /login in 6.3s
+ GET /login 200 in 7569ms
+ GET /login 200 in 562ms
+ GET /login 200 in 483ms
+ GET /login 200 in 509ms
+ GET /login 200 in 430ms
+ GET /login 200 in 463ms
+ ○ Compiling /auth/confirm ...
+ ✓ Compiled /auth/confirm in 744ms
+ HEAD /auth/confirm?token_hash=x&type=invite&next=%2Finvitacion 200 in 1135ms
+ GET /auth/confirm?token_hash=x&type=invite&next=%2Finvitacion 200 in 410ms
+ GET /login 200 in 867ms
+ ○ Compiling / ...
+ ✓ Compiled / in 1674ms
+ GET / 200 in 2215ms
+ POST /login 303 in 3078ms
+ ○ Compiling /portal ...
+ ✓ Compiled /portal in 1971ms
+ GET /portal 200 in 2500ms
+ GET /portal 200 in 626ms
+ GET /login?error=sin-expediente 200 in 422ms
+ GET /login?error=sin-expediente 200 in 346ms
+ GET /login 200 in 431ms
+ GET / 200 in 410ms
+ POST /login 303 in 910ms
+ ○ Compiling /consultorio ...
+ ✓ Compiled /consultorio in 851ms
+ GET /consultorio 200 in 1795ms
+ GET /consultorio 200 in 1293ms
+ ○ Compiling /consultorio/pacientes/nuevo ...
+ ✓ Compiled /consultorio/pacientes/nuevo in 1151ms
+ GET /consultorio/pacientes/nuevo 200 in 2272ms
+ ○ Compiling /consultorio/pacientes/[id] ...
+ ✓ Compiled /consultorio/pacientes/[id] in 749ms
+ GET /consultorio/pacientes/29fea01c-8038-4504-9f45-fee686fa868b 200 in 2773ms
+ POST /consultorio/pacientes/nuevo 303 in 3064ms
+ POST /consultorio/pacientes/29fea01c-8038-4504-9f45-fee686fa868b 200 in 945ms
+ HEAD /auth/confirm?token_hash=<redactado>&type=invite&next=%2Finvitacion 200 in 406ms
+ GET /auth/confirm?token_hash=<redactado>&type=invite&next=%2Finvitacion 200 in 331ms
+ GET /consultorio/pacientes/29fea01c-8038-4504-9f45-fee686fa868b 200 in 1713ms
+ GET /auth/confirm?token_hash=<redactado>&type=invite&next=%2Finvitacion 200 in 342ms
+ ○ Compiling /invitacion ...
+ ✓ Compiled /invitacion in 1080ms
+ GET /invitacion 200 in 1598ms
+ POST /auth/confirm?token_hash=<redactado>&type=invite&next=%2Finvitacion 303 in 2266ms
+ GET /consultorio/pacientes/29fea01c-8038-4504-9f45-fee686fa868b 200 in 1106ms
+ GET / 200 in 395ms
+ POST /invitacion 303 in 847ms
+ GET /portal 200 in 492ms
+ GET /portal 200 in 617ms
+ GET /consultorio/pacientes/29fea01c-8038-4504-9f45-fee686fa868b 200 in 1042ms
+ GET /auth/confirm?token_hash=<redactado>&type=invite&next=%2Finvitacion 200 in 274ms
+ GET /login?error=enlace 200 in 270ms
+ POST /auth/confirm?token_hash=<redactado>&type=invite&next=%2Finvitacion 303 in 511ms
