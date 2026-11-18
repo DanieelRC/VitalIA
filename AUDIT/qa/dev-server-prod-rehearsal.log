@@ -1,0 +1,44 @@
+   ▲ Next.js 15.5.28 (Turbopack)
+   - Local:        http://localhost:3007
+   - Network:      http://192.168.0.185:3007
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · serverActions
+
+ ✓ Starting...
+ ○ Compiling middleware ...
+ ✓ Compiled middleware in 630ms
+ ✓ Ready in 3.8s
+ ○ Compiling /login ...
+ ✓ Compiled /login in 4.6s
+ GET /login 200 in 5447ms
+ GET /login 200 in 409ms
+ ○ Compiling / ...
+ ✓ Compiled / in 665ms
+ GET / 200 in 1122ms
+ POST /login 303 in 1524ms
+ ○ Compiling /admin ...
+ GET /registro 200 in 3840ms
+ ✓ Compiled /admin in 4.8s
+<claude-code-hint v="1" type="plugin" value="stripe@claude-plugins-official" />
+Using the user object as returned from supabase.auth.getSession() or from some supabase.auth.onAuthStateChange() events could be insecure! This value comes directly from the storage medium (usually cookies on the server) and may not be authentic. Use supabase.auth.getUser() instead which authenticates the data by contacting the Supabase Auth server.
+Using the user object as returned from supabase.auth.getSession() or from some supabase.auth.onAuthStateChange() events could be insecure! This value comes directly from the storage medium (usually cookies on the server) and may not be authentic. Use supabase.auth.getUser() instead which authenticates the data by contacting the Supabase Auth server.
+ GET /admin 200 in 5384ms
+Using the user object as returned from supabase.auth.getSession() or from some supabase.auth.onAuthStateChange() events could be insecure! This value comes directly from the storage medium (usually cookies on the server) and may not be authentic. Use supabase.auth.getUser() instead which authenticates the data by contacting the Supabase Auth server.
+Using the user object as returned from supabase.auth.getSession() or from some supabase.auth.onAuthStateChange() events could be insecure! This value comes directly from the storage medium (usually cookies on the server) and may not be authentic. Use supabase.auth.getUser() instead which authenticates the data by contacting the Supabase Auth server.
+ GET /admin 200 in 861ms
+[registro] enlace de confirmación (solo desarrollo): http://localhost:3000/auth/confirm?token_hash=<redactado>&type=magiclink&next=%2Fconsultorio%3Fbienvenida%3D1
+ ○ Compiling /admin-2fa ...
+ ✓ Compiled /admin-2fa in 1311ms
+ GET /registro/confirma?correo=qa-nueva-1794961796%40example.test 200 in 1295ms
+ POST /registro 303 in 2354ms
+ GET /admin-2fa 200 in 1665ms
+ GET /login 200 in 309ms
+ GET / 200 in 430ms
+ POST /login 303 in 833ms
+Using the user object as returned from supabase.auth.getSession() or from some supabase.auth.onAuthStateChange() events could be insecure! This value comes directly from the storage medium (usually cookies on the server) and may not be authentic. Use supabase.auth.getUser() instead which authenticates the data by contacting the Supabase Auth server.
+Using the user object as returned from supabase.auth.getSession() or from some supabase.auth.onAuthStateChange() events could be insecure! This value comes directly from the storage medium (usually cookies on the server) and may not be authentic. Use supabase.auth.getUser() instead which authenticates the data by contacting the Supabase Auth server.
+ GET /admin 200 in 321ms
+Using the user object as returned from supabase.auth.getSession() or from some supabase.auth.onAuthStateChange() events could be insecure! This value comes directly from the storage medium (usually cookies on the server) and may not be authentic. Use supabase.auth.getUser() instead which authenticates the data by contacting the Supabase Auth server.
+Using the user object as returned from supabase.auth.getSession() or from some supabase.auth.onAuthStateChange() events could be insecure! This value comes directly from the storage medium (usually cookies on the server) and may not be authentic. Use supabase.auth.getUser() instead which authenticates the data by contacting the Supabase Auth server.
+ GET /admin 200 in 337ms

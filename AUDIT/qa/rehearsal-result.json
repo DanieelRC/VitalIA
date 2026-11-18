@@ -1,0 +1,18 @@
+{
+  "admin_aterriza_en": "/",
+  "registro": "ok",
+  "consultorio_nuevo": {
+    "rol": "nutriologo",
+    "grupos": 18,
+    "horarios": 10,
+    "material": 5,
+    "ajustes_ia": 1,
+    "estado": {
+      "status": "prueba",
+      "plan": "p5"
+    }
+  },
+  "restantes": [
+    "danieeelrc@gmail.com"
+  ]
+}
