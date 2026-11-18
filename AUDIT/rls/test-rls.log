@@ -1,0 +1,90 @@
+
+> vitalia@0.1.0 test:rls
+> node --env-file=.env.local scripts/test-rls.mjs
+
+✔ El trigger vincula la cuenta con el expediente por correo
+✔ Paciente no lee la tabla de expedientes (antecedentes, medicamentos)
+✔ Paciente solo ve sus datos básicos
+✔ Paciente no puede leer notas de sus mediciones
+✔ Paciente no puede leer notas de recordatorios capturados en consulta
+✔ Paciente no ve notas SOAP (ni las suyas)
+✔ Paciente no ve notas rápidas
+✔ Paciente no ve planes ajenos ni sus borradores
+✔ Paciente lee el catálogo
+✔ Paciente no puede auto-promoverse a nutriólogo
+✔ Paciente no puede escribir en el hilo de otro
+✔ Paciente sí escribe en su hilo
+✔ Paciente no puede capturar R24h como nutriólogo
+✔ Paciente no registra progreso de otro
+✔ Paciente no puede llamar ai_reserve directamente
+✔ Paciente no lee configuración de IA
+✔ Paciente no lee la caché del asistente
+✔ Paciente no sube archivos a la carpeta de otro
+✔ Paciente no puede subir HTML a su carpeta
+✔ Paciente no puede bloquear la agenda con una cita de meses
+✔ Paciente no agenda a más de 120 días
+✔ Paciente tiene máximo 3 citas próximas
+✔ Progreso rechaza valores imposibles
+✔ Paciente no lee el registro de intentos de acceso
+✔ Paciente no ve laboratorios, pagos ni plantillas
+✔ Paciente no puede registrar pagos
+✔ Paciente registra su día, no el de otro
+✔ Paciente solo ve su propio registro diario
+✔ Foto de comida: sin comentario propio y solo en su carpeta
+✔ Paciente no puede editar el comentario del nutriólogo
+✔ Paciente no suscribe notificaciones a nombre de otro
+✔ Paciente no lee la bitácora de notificaciones
+✔ Paciente marca como hecha una comida suya
+✔ Paciente no puede marcar comidas de otro paciente
+✔ Paciente no puede registrar comidas de fechas lejanas
+✔ Paciente solo ve sus propias comidas marcadas
+✔ Paciente ve su peso meta pero no los campos propios del consultorio
+✔ Paciente no lee ni escribe macro_presets
+✔ Paciente no lee ni escribe meal_presets
+✔ Paciente no lee ni escribe custom_formulas
+✔ Paciente no lee ni escribe custom_factors
+✔ Paciente no lee ni escribe custom_fields
+✔ Paciente no lee ni escribe soap_templates
+✔ Paciente no puede cambiar el aporte de los equivalentes
+✔ Nutriólogo crea una receta propia
+✔ Paciente no puede subir fotos de recetas
+✔ Nutriólogo sube la foto de una receta
+✔ La foto de una receta propia se puede cambiar
+✔ Las recetas del catálogo base (compartido) no se modifican
+✔ Paciente puede ver la foto de la receta
+✔ Paciente no puede borrar fotos de recetas
+✔ create_clinic crea un consultorio en prueba
+✔ Un usuario no puede llamar create_clinic
+✔ Otro consultorio no ve pacientes, consultas ni mensajes ajenos
+✔ Otro consultorio solo ve su configuración y su IA
+✔ Otro consultorio tiene su propia copia de los grupos de equivalentes
+✔ Otro consultorio no ve los alimentos propios de otro
+✔ Otro consultorio solo ve su propio registro de consultorio
+✔ No se puede crear un paciente en otro consultorio
+✔ No se puede modificar un paciente de otro consultorio
+✔ Otro consultorio no abre archivos de pacientes ajenos
+✔ Otro consultorio no sube archivos a la carpeta ajena
+✔ Paciente no puede fabricar evidencia de consentimiento
+✔ Paciente envía una solicitud ARCO; el estado y la respuesta no los decide él
+✔ Paciente no hace solicitudes a nombre de otro
+✔ Paciente no puede cambiar el estado de su solicitud
+✔ Otro consultorio no ve solicitudes ARCO ni consentimientos ajenos
+✔ El consultorio responde, pero no puede alterar lo que pidió el paciente
+✔ Las solicitudes ARCO no se pueden borrar
+✔ El consultorio registra firmas en papel, pero no aceptaciones electrónicas
+✔ La evidencia de consentimiento no se puede borrar
+✔ Paciente solo ve su consultorio
+✔ Paciente no puede cambiar el plan
+✔ Plan Inicio admite 5 pacientes activos
+✔ El sexto paciente activo se rechaza con PLAN_LIMITE
+✔ Los pacientes inactivos no cuentan para el límite
+✔ Reactivar por encima del límite se rechaza
+✔ Al subir de plan en la prueba se libera el límite
+✔ No se baja a un plan menor que los pacientes activos
+✔ Con la prueba vencida: se consulta, pero no se agregan pacientes activos ni se usa la IA
+✔ Con la prueba vencida un paciente activo nuevo se rechaza (PLAN_INACTIVO)
+✔ Nota firmada no se puede modificar
+✔ ai_reserve bloquea al superar el presupuesto
+✔ ai_reserve aplica límite por minuto
+
+Todas las pruebas de RLS pasaron

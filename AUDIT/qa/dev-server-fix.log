@@ -1,0 +1,83 @@
+
+> vitalia@0.1.0 dev
+> next dev --turbopack
+
+   ▲ Next.js 15.5.28 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.0.185:3000
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · serverActions
+
+ ✓ Starting...
+ ✓ Compiled middleware in 450ms
+ ✓ Ready in 3.6s
+ ○ Compiling /login ...
+ ✓ Compiled /login in 5.4s
+ GET /login 200 in 6357ms
+ ○ Compiling / ...
+ ✓ Compiled / in 829ms
+ GET / 200 in 1211ms
+ POST /login 303 in 1760ms
+ ○ Compiling /consultorio/pacientes/nuevo ...
+ ✓ Compiled /consultorio/pacientes/nuevo in 1245ms
+ GET /consultorio 200 in 2625ms
+ GET /consultorio/pacientes/nuevo 200 in 2996ms
+ ○ Compiling /consultorio/pacientes/[id] ...
+ ✓ Compiled /consultorio/pacientes/[id] in 801ms
+ GET /consultorio/pacientes/aa9906aa-0ca0-4242-8c81-c82e66ef8277 200 in 2546ms
+ POST /consultorio/pacientes/nuevo 303 in 2883ms
+ POST /consultorio/pacientes/aa9906aa-0ca0-4242-8c81-c82e66ef8277 200 in 408ms
+ GET /consultorio/pacientes/nuevo 200 in 824ms
+ GET /consultorio/pacientes/43e4dc6b-43d4-4c25-b104-79b7661fde6b 200 in 695ms
+ POST /consultorio/pacientes/nuevo 303 in 1000ms
+ POST /consultorio/pacientes/43e4dc6b-43d4-4c25-b104-79b7661fde6b 200 in 803ms
+ GET /consultorio/pacientes/43e4dc6b-43d4-4c25-b104-79b7661fde6b 200 in 1332ms
+ GET /login 200 in 328ms
+ GET / 200 in 468ms
+ POST /login 303 in 874ms
+ GET /consultorio 200 in 1241ms
+ GET /consultorio/pacientes/nuevo 200 in 1532ms
+ GET /consultorio/pacientes/f38006e2-1690-445b-aa5a-4cea025bf8eb 200 in 636ms
+ POST /consultorio/pacientes/nuevo 303 in 1004ms
+ POST /consultorio/pacientes/f38006e2-1690-445b-aa5a-4cea025bf8eb 200 in 288ms
+ GET /consultorio/pacientes/nuevo 200 in 759ms
+ GET /consultorio/pacientes/ad26c551-53c3-4882-ac15-9d8999e5598a 200 in 911ms
+ POST /consultorio/pacientes/nuevo 303 in 1223ms
+ POST /consultorio/pacientes/ad26c551-53c3-4882-ac15-9d8999e5598a 200 in 738ms
+ GET /consultorio/pacientes/ad26c551-53c3-4882-ac15-9d8999e5598a 200 in 1166ms
+ GET /login 200 in 439ms
+ GET / 200 in 430ms
+ POST /login 303 in 1022ms
+ GET /consultorio 200 in 1344ms
+ GET /consultorio/pacientes/nuevo 200 in 1613ms
+ GET /consultorio/pacientes/1000e135-bd59-4232-a951-0464eba28292 200 in 751ms
+ POST /consultorio/pacientes/nuevo 303 in 1049ms
+ POST /consultorio/pacientes/1000e135-bd59-4232-a951-0464eba28292 200 in 383ms
+ GET /consultorio/pacientes/nuevo 200 in 981ms
+ GET /consultorio/pacientes/5caa6be9-5b30-459e-87f6-4c138e5a512e 200 in 746ms
+ POST /consultorio/pacientes/nuevo 303 in 1052ms
+ POST /consultorio/pacientes/5caa6be9-5b30-459e-87f6-4c138e5a512e 200 in 678ms
+ GET /consultorio/pacientes/5caa6be9-5b30-459e-87f6-4c138e5a512e 200 in 1195ms
+ ✓ Compiled in 2s
+ ✓ Compiled in 1313ms
+ GET /login 200 in 340ms
+ GET / 200 in 552ms
+ POST /login 303 in 1101ms
+ ✓ Compiled /consultorio/pacientes/nuevo in 239ms
+ GET /consultorio 200 in 2379ms
+ GET /consultorio/pacientes/nuevo 200 in 2611ms
+ ✓ Compiled /consultorio/pacientes/[id] in 156ms
+ ⨯ Failed to generate static paths for /consultorio/pacientes/[id]:
+[Error: Jest worker encountered 2 child process exceptions, exceeding retry limit] {
+  type: 'WorkerError'
+}
+ GET /consultorio/pacientes/5421e189-f931-4108-b2c0-1443813bb1e3 200 in 1351ms
+ POST /consultorio/pacientes/nuevo 303 in 1878ms
+ ⨯ [Error: Jest worker encountered 2 child process exceptions, exceeding retry limit] {
+  type: 'WorkerError',
+  page: '/consultorio/pacientes/5421e189-f931-4108-b2c0-1443813bb1e3'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 2.5s
+ POST /consultorio/pacientes/5421e189-f931-4108-b2c0-1443813bb1e3 500 in 3901ms

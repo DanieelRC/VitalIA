@@ -1,0 +1,5 @@
+Borrador con IA
+Guardar borrador
+Guardar y firmar
+Agregar diagnóstico
+Eliminar borrador

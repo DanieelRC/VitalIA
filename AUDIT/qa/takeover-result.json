@@ -1,0 +1,6 @@
+{
+  "enlace_tipo": "recovery",
+  "aterriza_en": "/invitacion",
+  "ve_pacientes_de_la_victima": true,
+  "url_final": "/consultorio/pacientes"
+}

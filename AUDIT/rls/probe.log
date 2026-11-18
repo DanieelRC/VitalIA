@@ -1,0 +1,86 @@
+VULNERABLE Paciente modifica su medición clínica vía my_anthropometry (UPDATE) — peso ahora 55
+VULNERABLE Paciente A inserta mediciones en el expediente de B vía my_anthropometry (INSERT) — fila insertada
+VULNERABLE Paciente borra un R24h capturado por el nutriólogo vía my_recalls (DELETE) — borrado
+VULNERABLE Paciente edita patologías/correo de su expediente vía my_patient (UPDATE) — {"pathologies":["ninguna"],"email":"cambiado-1794957165317@example.test"}
+VULNERABLE Paciente crea expedientes nuevos en su consultorio vía my_patient (INSERT) — [{"id":"9dfbb0c7-badc-4594-b6e0-1ce5e62a6393","clinic_id":"762371dd-bc96-4e2e-a3c3-201aa34359ed"}]
+VULNERABLE Paciente borra su medición clínica vía my_anthropometry (DELETE) — borrado
+ok         Paciente A lee mediciones de B vía vista
+ok         my_patient expone medicamentos/antecedentes
+ok         Anónimo lee my_patient — permission denied for view my_patient
+ok         Anónimo obtiene horarios ocupados (busy_slots) — 0 filas
+ok         Paciente abre un anexo oculto registrando su propia fila de attachments con la misma ruta — requiere conocer la ruta (UUID aleatorio)
+ok         Paciente altera mensajes del hilo
+ok         Nutriólogo borra una nota SOAP firmada — La nota firmada no puede eliminarse
+ok         Nutriólogo borra un expediente completo con notas firmadas (cascade) — La nota firmada no puede eliminarse
+[
+  {
+    "name": "Paciente modifica su medición clínica vía my_anthropometry (UPDATE)",
+    "vulnerable": true,
+    "detail": "peso ahora 55"
+  },
+  {
+    "name": "Paciente A inserta mediciones en el expediente de B vía my_anthropometry (INSERT)",
+    "vulnerable": true,
+    "detail": "fila insertada"
+  },
+  {
+    "name": "Paciente borra un R24h capturado por el nutriólogo vía my_recalls (DELETE)",
+    "vulnerable": true,
+    "detail": "borrado"
+  },
+  {
+    "name": "Paciente edita patologías/correo de su expediente vía my_patient (UPDATE)",
+    "vulnerable": true,
+    "detail": "{\"pathologies\":[\"ninguna\"],\"email\":\"cambiado-1794957165317@example.test\"}"
+  },
+  {
+    "name": "Paciente crea expedientes nuevos en su consultorio vía my_patient (INSERT)",
+    "vulnerable": true,
+    "detail": "[{\"id\":\"9dfbb0c7-badc-4594-b6e0-1ce5e62a6393\",\"clinic_id\":\"762371dd-bc96-4e2e-a3c3-201aa34359ed\"}]"
+  },
+  {
+    "name": "Paciente borra su medición clínica vía my_anthropometry (DELETE)",
+    "vulnerable": true,
+    "detail": "borrado"
+  },
+  {
+    "name": "Paciente A lee mediciones de B vía vista",
+    "vulnerable": false,
+    "detail": ""
+  },
+  {
+    "name": "my_patient expone medicamentos/antecedentes",
+    "vulnerable": false,
+    "detail": ""
+  },
+  {
+    "name": "Anónimo lee my_patient",
+    "vulnerable": false,
+    "detail": "permission denied for view my_patient"
+  },
+  {
+    "name": "Anónimo obtiene horarios ocupados (busy_slots)",
+    "vulnerable": false,
+    "detail": "0 filas"
+  },
+  {
+    "name": "Paciente abre un anexo oculto registrando su propia fila de attachments con la misma ruta",
+    "vulnerable": false,
+    "detail": "requiere conocer la ruta (UUID aleatorio)"
+  },
+  {
+    "name": "Paciente altera mensajes del hilo",
+    "vulnerable": false,
+    "detail": ""
+  },
+  {
+    "name": "Nutriólogo borra una nota SOAP firmada",
+    "vulnerable": false,
+    "detail": "La nota firmada no puede eliminarse"
+  },
+  {
+    "name": "Nutriólogo borra un expediente completo con notas firmadas (cascade)",
+    "vulnerable": false,
+    "detail": "La nota firmada no puede eliminarse"
+  }
+]

@@ -3,6 +3,7 @@ import { Alert, Button, Card, fmtDate, fmtDateTime, LinkButton } from "@/compone
 import { getCustomFields, getLatestAnthropometry, getPatient } from "@/lib/data";
 import { createClient } from "@/lib/supabase/server";
 import { InviteLink } from "@/components/invite-link";
+import { portalAccess } from "@/lib/patient-access";
 import { resendInvite, setPatientActive, updatePatient } from "../actions";
 import { PatientFields } from "../patient-fields";
 
@@ -10,7 +11,8 @@ export default async function PatientSummary({ params }: { params: Promise<{ id:
   const { id } = await params;
   const p = await getPatient(id);
   const supabase = await createClient();
-  const [customFields, last, plan, nextAppt] = await Promise.all([
+  const [access, customFields, last, plan, nextAppt] = await Promise.all([
+    portalAccess(p.user_id, p.email),
     getCustomFields(),
     getLatestAnthropometry(id),
     supabase.from("meal_plans").select("id, name, kcal_target").eq("patient_id", id).eq("status", "activo").maybeSingle(),
@@ -28,11 +30,16 @@ export default async function PatientSummary({ params }: { params: Promise<{ id:
       </Card>
       <div className="flex flex-col gap-4">
         <Card title="Acceso al portal">
-          {p.user_id ? (
+          {access === "active" ? (
             <Alert tone="primary">Cuenta activa{p.privacy_accepted_at ? ` · aviso de privacidad aceptado ${fmtDate(p.privacy_accepted_at)}` : ""}.</Alert>
+          ) : access === "foreign" ? (
+            <Alert tone="danger">El correo de este expediente pertenece a otra cuenta. Verifica el correo del paciente.</Alert>
           ) : (
             <>
-              <p className="mb-3 text-sm text-muted">{p.invited_at ? `Invitación enviada ${fmtDateTime(p.invited_at)}.` : "Aún no se ha invitado."}</p>
+              <p className="mb-3 text-sm text-muted">
+                {p.invited_at ? `Invitación enviada ${fmtDateTime(p.invited_at)}` : "Aún no se ha invitado"}
+                {access === "pending" ? " · el paciente todavía no entra a su portal." : "."}
+              </p>
               <ActionForm action={async () => { "use server"; return resendInvite(id); }}>
                 <SubmitButton variant="secondary" size="sm" pendingText="Enviando…">{p.invited_at ? "Reenviar invitación" : "Enviar invitación"}</SubmitButton>
               </ActionForm>

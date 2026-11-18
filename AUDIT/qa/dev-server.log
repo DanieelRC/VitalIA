@@ -1,0 +1,311 @@
+
+> vitalia@0.1.0 dev
+> next dev --turbopack
+
+ ⚠ Port 3000 is in use by process 22160, using available port 3003 instead.
+   ▲ Next.js 15.5.28 (Turbopack)
+   - Local:        http://localhost:3003
+   - Network:      http://192.168.0.185:3003
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · serverActions
+
+ ✓ Starting...
+ ✓ Compiled middleware in 471ms
+ ✓ Ready in 3.1s
+ ○ Compiling /login ...
+ ✓ Compiled /login in 4.1s
+ GET /login 200 in 5006ms
+ GET /login 200 in 373ms
+ GET /login 200 in 377ms
+ ○ Compiling / ...
+ ✓ Compiled / in 739ms
+ POST /login 303 in 1619ms
+ GET / 200 in 1263ms
+ GET /login 200 in 674ms
+ ○ Compiling /portal/archivos ...
+ ✓ Compiled /portal/archivos in 877ms
+ GET /portal/archivos 200 in 1727ms
+ ○ Compiling /portal/comidas ...
+ ✓ Compiled /portal/comidas in 606ms
+ GET /portal/comidas 200 in 1266ms
+ ○ Compiling /api/meal-photo/[id] ...
+ ✓ Compiled /api/meal-photo/[id] in 838ms
+ GET /api/meal-photo/303faff2-1e65-48e0-a663-1e027e594af6 307 in 2343ms
+ GET /api/meal-photo/8f14607f-d1d2-4d3e-91ad-4d17f7ecf5c4 307 in 2332ms
+ ○ Compiling /portal/citas ...
+ ✓ Compiled /portal/citas in 580ms
+ GET /portal/citas 200 in 1544ms
+ ○ Compiling /portal/mensajes ...
+ ✓ Compiled /portal/mensajes in 1084ms
+ GET /portal/mensajes 200 in 1673ms
+ GET /login 200 in 288ms
+ GET / 200 in 390ms
+ POST /login 303 in 694ms
+ ○ Compiling /consultorio ...
+ ✓ Compiled /consultorio in 937ms
+ GET /consultorio 200 in 1725ms
+ GET /consultorio/pacientes 200 in 2212ms
+ GET /login 200 in 255ms
+ GET / 200 in 266ms
+ POST /login 303 in 586ms
+ ○ Compiling /consultorio/pacientes/[id] ...
+ GET /consultorio 200 in 1116ms
+ GET /consultorio 200 in 1276ms
+ ✓ Compiled /consultorio/pacientes/[id] in 1486ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac 200 in 3682ms
+ ○ Compiling /consultorio/pacientes/[id]/expediente ...
+ ✓ Compiled /consultorio/pacientes/[id]/expediente in 522ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/expediente 200 in 2070ms
+ ○ Compiling /consultorio/pacientes/[id]/plan ...
+ ✓ Compiled /consultorio/pacientes/[id]/plan in 557ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/plan 200 in 2280ms
+ ○ Compiling /consultorio/pacientes/[id]/pagos ...
+ ✓ Compiled /consultorio/pacientes/[id]/pagos in 552ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/pagos 200 in 2317ms
+ GET /login 200 in 273ms
+ GET / 200 in 266ms
+ POST /login 303 in 598ms
+ ○ Compiling /portal ...
+ GET /portal 200 in 1577ms
+ GET /portal 200 in 789ms
+ ✓ Compiled /portal in 2.6s
+ GET /portal/asistente 200 in 3173ms
+ GET /login 200 in 344ms
+ GET /login 200 in 278ms
+ GET / 200 in 302ms
+ POST /login 303 in 671ms
+ GET /portal 200 in 675ms
+ ○ Compiling /portal/mi-plan ...
+ GET /portal 200 in 850ms
+ ✓ Compiled /portal/mi-plan in 873ms
+ GET /portal/mi-plan 200 in 2293ms
+ GET /portal/citas 200 in 889ms
+ GET /portal/mensajes 200 in 1098ms
+ GET /portal/archivos 200 in 764ms
+ GET /portal/comidas 200 in 778ms
+ GET /api/meal-photo/8f14607f-d1d2-4d3e-91ad-4d17f7ecf5c4 307 in 729ms
+ GET /api/meal-photo/303faff2-1e65-48e0-a663-1e027e594af6 307 in 742ms
+ ○ Compiling /portal/mis-datos ...
+ ✓ Compiled /portal/mis-datos in 619ms
+ GET /portal/mis-datos 200 in 1598ms
+ ○ Compiling /portal/progreso ...
+ ✓ Compiled /portal/progreso in 1684ms
+ GET /portal/progreso 200 in 2706ms
+ GET /portal/mensajes 200 in 1245ms
+ POST /portal/mensajes 200 in 282ms
+ GET /portal/asistente 200 in 735ms
+ ○ Compiling /api/chat ...
+ ✓ Compiled /api/chat in 1292ms
+ POST /api/chat 200 in 1962ms
+ GET /portal/asistente 200 in 907ms
+ POST /api/chat 200 in 1998ms
+ GET /portal/asistente 200 in 756ms
+ POST /api/chat 200 in 1622ms
+ GET /portal/archivos 200 in 808ms
+ POST /portal/archivos 200 in 454ms
+ POST /portal/archivos 200 in 381ms
+ GET /portal/comidas 200 in 632ms
+ GET /api/meal-photo/8f14607f-d1d2-4d3e-91ad-4d17f7ecf5c4 307 in 677ms
+ GET /api/meal-photo/303faff2-1e65-48e0-a663-1e027e594af6 307 in 658ms
+ POST /portal/comidas 200 in 536ms
+ GET /api/meal-photo/7a730f65-e415-41f7-b10f-8606733cf6b1 307 in 436ms
+ GET /consultorio 307 in 849ms
+ GET /portal 200 in 990ms
+ GET /portal 200 in 956ms
+ GET /portal/mi-plan 200 in 1765ms
+ GET /portal/asistente 200 in 788ms
+ GET /portal/citas 200 in 990ms
+ GET /portal/mensajes 200 in 929ms
+ GET /login 200 in 283ms
+ GET / 200 in 255ms
+ POST /login 303 in 573ms
+ GET /consultorio 200 in 868ms
+ GET /consultorio 200 in 1380ms
+ GET /consultorio 200 in 1741ms
+ GET /consultorio/pacientes 200 in 926ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac 200 in 1113ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/expediente 200 in 824ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/plan 200 in 1073ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/pagos 200 in 1164ms
+ ○ Compiling /consultorio/agenda ...
+ ✓ Compiled /consultorio/agenda in 586ms
+ GET /consultorio/agenda 200 in 1905ms
+ ○ Compiling /consultorio/pagos ...
+ ✓ Compiled /consultorio/pagos in 502ms
+ GET /consultorio/pagos 200 in 1348ms
+ GET /portal 307 in 462ms
+ GET /consultorio 200 in 869ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/expediente 200 in 811ms
+ ○ Compiling /consultorio/pacientes/[id]/expediente/[cid] ...
+ POST /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/expediente 303 in 3057ms
+ ✓ Compiled /consultorio/pacientes/[id]/expediente/[cid] in 3s
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/pagos 200 in 1525ms
+ POST /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/pagos 200 in 530ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/expediente/0988d9a0-1fb9-4d10-a4f9-4a2f4fea3b51 200 in 4967ms
+ POST /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/pagos 200 in 261ms
+ ✓ Compiled /api/pdf/[tipo]/[id] in 283ms
+ GET /api/pdf/recibo/5ec95f42-bf0c-4afe-9896-242bcc16ec93 200 in 4101ms
+ GET /consultorio 200 in 825ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/expediente 200 in 1179ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/plan 200 in 1014ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/pagos 200 in 1842ms
+ GET /consultorio/pacientes/00000000-0000-0000-0000-000000000000 200 in 931ms
+ ✓ Compiled /consultorio/pacientes/nuevo in 488ms
+ GET /consultorio/pacientes/nuevo 200 in 1205ms
+ GET /consultorio/pacientes/cb27fc22-0919-408b-a7ca-398eaaec10c9 200 in 825ms
+ POST /consultorio/pacientes/nuevo 303 in 1248ms
+ POST /consultorio/pacientes/cb27fc22-0919-408b-a7ca-398eaaec10c9 200 in 640ms
+ GET /login 200 in 278ms
+ GET /login 200 in 420ms
+ GET /login 200 in 331ms
+ GET /login 200 in 491ms
+ ✓ Compiled /api/mis-datos in 202ms
+ GET /api/mis-datos 401 in 560ms
+ ✓ Compiled /api/exportar-consultorio in 189ms
+ GET /api/exportar-consultorio 401 in 540ms
+ GET /api/pdf/expediente/49307a74-855c-4329-83f2-5dcaffe38fac 401 in 452ms
+ ✓ Compiled /api/files/[id] in 387ms
+ GET /api/files/00000000-0000-0000-0000-000000000000 404 in 2077ms
+ ✓ Compiled /api/cron/push in 410ms
+ GET /api/cron/push 401 in 1522ms
+ GET /api/cron/push 401 in 369ms
+ POST /api/chat 401 in 383ms
+ POST /api/chat 403 in 379ms
+ GET /login 200 in 392ms
+ GET /login 200 in 317ms
+ POST /login 200 in 318ms
+ GET /login 200 in 309ms
+ GET / 200 in 302ms
+ POST /login 303 in 717ms
+ GET /portal 200 in 626ms
+ GET /portal 200 in 1034ms
+ GET /portal/mi-plan 200 in 2052ms
+ GET /portal/citas 200 in 702ms
+ GET /portal/mensajes 200 in 621ms
+ GET /portal/archivos 200 in 620ms
+ GET /portal/comidas 200 in 607ms
+ GET /api/meal-photo/7a730f65-e415-41f7-b10f-8606733cf6b1 307 in 683ms
+ GET /api/meal-photo/303faff2-1e65-48e0-a663-1e027e594af6 307 in 674ms
+ GET /api/meal-photo/8f14607f-d1d2-4d3e-91ad-4d17f7ecf5c4 307 in 687ms
+ GET /portal/mis-datos 200 in 704ms
+ GET /portal/progreso 200 in 909ms
+ GET /portal/mensajes 200 in 651ms
+ POST /portal/mensajes 200 in 336ms
+ GET /portal/asistente 200 in 713ms
+ POST /api/chat 200 in 452ms
+ GET /portal/asistente 200 in 656ms
+ POST /api/chat 200 in 1482ms
+ GET /portal/asistente 200 in 719ms
+ POST /api/chat 200 in 587ms
+ GET /portal/archivos 200 in 948ms
+ POST /portal/archivos 200 in 425ms
+ POST /portal/archivos 200 in 252ms
+ GET /portal/comidas 200 in 753ms
+ GET /api/meal-photo/8f14607f-d1d2-4d3e-91ad-4d17f7ecf5c4 307 in 820ms
+ GET /api/meal-photo/7a730f65-e415-41f7-b10f-8606733cf6b1 307 in 811ms
+ GET /api/meal-photo/303faff2-1e65-48e0-a663-1e027e594af6 307 in 773ms
+ POST /portal/comidas 200 in 522ms
+ GET /api/meal-photo/21fc8f35-baa2-4a91-895d-02dbec66572f 307 in 474ms
+ GET /consultorio 307 in 709ms
+ GET /portal 200 in 908ms
+ ○ Compiling /admin ...
+ ✓ Compiled /admin in 2.4s
+<claude-code-hint v="1" type="plugin" value="stripe@claude-plugins-official" />
+ GET /admin 404 in 2738ms
+ GET /api/pdf/expediente/49307a74-855c-4329-83f2-5dcaffe38fac 403 in 651ms
+ GET /api/exportar-consultorio 401 in 554ms
+ GET /api/mis-datos 200 in 570ms
+ POST /api/chat 200 in 1567ms
+ GET /portal 200 in 837ms
+ GET /portal/mi-plan 200 in 1159ms
+ GET /portal/asistente 200 in 1021ms
+ GET /portal/citas 200 in 819ms
+ GET /portal/mensajes 200 in 618ms
+ GET /login 200 in 279ms
+ GET / 200 in 249ms
+ POST /login 303 in 584ms
+ GET /consultorio 200 in 835ms
+ GET /consultorio 200 in 1418ms
+ GET /consultorio 200 in 1376ms
+ GET /consultorio/pacientes 200 in 943ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac 200 in 1052ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/expediente 200 in 832ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/plan 200 in 1120ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/pagos 200 in 1039ms
+ GET /consultorio/agenda 200 in 1122ms
+ GET /consultorio/pagos 200 in 954ms
+ GET /portal 307 in 481ms
+ GET /consultorio 200 in 882ms
+ GET /admin 404 in 334ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/expediente 200 in 1228ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/expediente/1be30771-3bb4-43e0-ab98-db56c114e922 200 in 692ms
+ POST /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/expediente 303 in 1028ms
+ POST /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/expediente/1be30771-3bb4-43e0-ab98-db56c114e922 200 in 655ms
+ POST /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/expediente/1be30771-3bb4-43e0-ab98-db56c114e922 200 in 711ms
+ POST /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/expediente/1be30771-3bb4-43e0-ab98-db56c114e922 200 in 593ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/pagos 200 in 957ms
+ POST /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/pagos 200 in 545ms
+ POST /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/pagos 200 in 239ms
+ GET /api/pdf/recibo/db63431f-50dc-41b4-8031-7f6382296d71 200 in 497ms
+ GET /consultorio 200 in 844ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/expediente 200 in 1154ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/plan 200 in 955ms
+ GET /consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/pagos 200 in 1055ms
+ GET /consultorio/pacientes/00000000-0000-0000-0000-000000000000 200 in 959ms
+ GET /consultorio/pacientes?q=zzzzzzqa 200 in 714ms
+ GET /api/files/no-es-uuid 404 in 397ms
+ GET /consultorio/pacientes/nuevo 200 in 811ms
+ GET /consultorio/pacientes/a08ea4f6-1c40-4da8-9360-bdec3347b7c7 200 in 720ms
+ POST /consultorio/pacientes/nuevo 303 in 984ms
+ POST /consultorio/pacientes/a08ea4f6-1c40-4da8-9360-bdec3347b7c7 200 in 666ms
+ GET /login 200 in 281ms
+ GET / 200 in 246ms
+ POST /login 303 in 624ms
+ GET /consultorio 200 in 802ms
+ GET /consultorio 200 in 1116ms
+ GET /consultorio/pacientes/nuevo 200 in 1774ms
+ GET /consultorio/pacientes/178797b7-9fc6-4edf-ab02-7c9f73c6d8c4 200 in 500ms
+ POST /consultorio/pacientes/nuevo 303 in 741ms
+ POST /consultorio/pacientes/178797b7-9fc6-4edf-ab02-7c9f73c6d8c4 200 in 538ms
+ ✓ Compiled /auth/confirm in 203ms
+ GET /auth/confirm?token_hash=<redactado>&type=recovery&next=%2Finvitacion 307 in 617ms
+ ✓ Compiled /invitacion in 405ms
+ GET /invitacion 200 in 1650ms
+ GET /consultorio/pacientes 200 in 661ms
+ ✓ Compiled in 933ms
+ ✓ Compiled in 378ms
+ GET /login 200 in 865ms
+ GET / 200 in 352ms
+ POST /login 303 in 744ms
+ ✓ Compiled /consultorio/pacientes/nuevo in 249ms
+ GET /consultorio 200 in 3687ms
+ GET /consultorio/pacientes/nuevo 200 in 3893ms
+ ✓ Compiled /consultorio/pacientes/[id] in 200ms
+ ⨯ Failed to generate static paths for /consultorio/pacientes/[id]:
+[Error: Jest worker encountered 2 child process exceptions, exceeding retry limit] {
+  type: 'WorkerError'
+}
+ GET /consultorio/pacientes/64ea415d-5f4e-4813-9e5d-06e65b53538b 200 in 1492ms
+ POST /consultorio/pacientes/nuevo 303 in 2022ms
+ ⨯ [Error: Jest worker encountered 2 child process exceptions, exceeding retry limit] {
+  type: 'WorkerError',
+  page: '/consultorio/pacientes/64ea415d-5f4e-4813-9e5d-06e65b53538b'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 3.5s
+ POST /consultorio/pacientes/64ea415d-5f4e-4813-9e5d-06e65b53538b 500 in 4567ms
+ GET /consultorio/pacientes/nuevo 200 in 1091ms
+ ⨯ [Error: Jest worker encountered 2 child process exceptions, exceeding retry limit] {
+  type: 'WorkerError',
+  page: '/consultorio/pacientes/8adaff64-862d-4509-b426-21db82626da8'
+}
+ GET /consultorio/pacientes/8adaff64-862d-4509-b426-21db82626da8 500 in 746ms
+ POST /consultorio/pacientes/nuevo 303 in 1108ms
+ ⨯ [Error: Jest worker encountered 2 child process exceptions, exceeding retry limit] {
+  type: 'WorkerError',
+  page: '/consultorio/pacientes/8adaff64-862d-4509-b426-21db82626da8'
+}
+ GET /consultorio/pacientes/8adaff64-862d-4509-b426-21db82626da8 500 in 735ms
+ ✓ Compiled in 1966ms
+ ✓ Compiled in 1442ms

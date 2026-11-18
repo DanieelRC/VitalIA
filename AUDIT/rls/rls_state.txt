@@ -1,0 +1,632 @@
+Pager usage is off.
+       relname        | rls | force 
+----------------------+-----+-------
+ admin_actions        | t   | f
+ ai_cache             | t   | f
+ ai_messages          | t   | f
+ ai_settings          | t   | f
+ ai_usage             | t   | f
+ anthropometry        | t   | f
+ appointments         | t   | f
+ arco_requests        | t   | f
+ attachments          | t   | f
+ audit_log            | t   | f
+ availability         | t   | f
+ billing_events       | t   | f
+ billing_invoices     | t   | f
+ billing_profiles     | t   | f
+ clinic_settings      | t   | f
+ clinics              | t   | f
+ consultation_addenda | t   | f
+ consultations        | t   | f
+ custom_factors       | t   | f
+ custom_fields        | t   | f
+ custom_formulas      | t   | f
+ daily_logs           | t   | f
+ education_materials  | t   | f
+ equivalent_groups    | t   | f
+ exercises            | t   | f
+ foods                | t   | f
+ lab_results          | t   | f
+ legal_acceptances    | t   | f
+ login_attempts       | t   | f
+ macro_presets        | t   | f
+ meal_checks          | t   | f
+ meal_photos          | t   | f
+ meal_plans           | t   | f
+ meal_presets         | t   | f
+ messages             | t   | f
+ patient_routines     | t   | f
+ patient_supplements  | t   | f
+ patients             | t   | f
+ payments             | t   | f
+ pes_diagnoses        | t   | f
+ plan_templates       | t   | f
+ plans                | t   | f
+ platform_admins      | t   | f
+ platform_settings    | t   | f
+ profiles             | t   | f
+ progress_logs        | t   | f
+ push_log             | t   | f
+ push_subscriptions   | t   | f
+ quick_notes          | t   | f
+ recalls_24h          | t   | f
+ recipes              | t   | f
+ reference_tables     | t   | f
+ reminder_prefs       | t   | f
+ routines             | t   | f
+ soap_templates       | t   | f
+ supplements          | t   | f
+(56 rows)
+
+      tablename       |        policyname        |  cmd   |      roles      |                                                                               qual                                                                               |                                                                                with_check                                                                                 
+----------------------+--------------------------+--------+-----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ ai_messages          | staff_read               | SELECT | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | 
+ ai_settings          | staff_read               | SELECT | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | 
+ ai_settings          | staff_update             | UPDATE | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | (is_staff() AND (clinic_id = current_clinic_id()))
+ ai_usage             | staff_read               | SELECT | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | 
+ anthropometry        | staff_all                | ALL    | {authenticated} | staff_of_patient(patient_id)                                                                                                                                     | staff_of_patient(patient_id)
+ appointments         | patient_insert           | INSERT | {authenticated} |                                                                                                                                                                  | ((patient_id = current_patient_id()) AND (status = 'solicitada'::text) AND (starts_at > now()))
+ appointments         | patient_read             | SELECT | {authenticated} | (patient_id = current_patient_id())                                                                                                                              | 
+ appointments         | staff_all                | ALL    | {authenticated} | staff_of_patient(patient_id)                                                                                                                                     | staff_of_patient(patient_id)
+ arco_requests        | patient_insert           | INSERT | {authenticated} |                                                                                                                                                                  | ((patient_id = current_patient_id()) AND (requested_by = auth.uid()))
+ arco_requests        | patient_read             | SELECT | {authenticated} | (patient_id = current_patient_id())                                                                                                                              | 
+ arco_requests        | staff_insert             | INSERT | {authenticated} |                                                                                                                                                                  | staff_of_patient(patient_id)
+ arco_requests        | staff_read               | SELECT | {authenticated} | staff_of_patient(patient_id)                                                                                                                                     | 
+ arco_requests        | staff_update             | UPDATE | {authenticated} | staff_of_patient(patient_id)                                                                                                                                     | staff_of_patient(patient_id)
+ attachments          | patient_insert           | INSERT | {authenticated} |                                                                                                                                                                  | ((patient_id = current_patient_id()) AND (uploaded_by = auth.uid()) AND visible_to_patient)
+ attachments          | patient_read             | SELECT | {authenticated} | ((patient_id = current_patient_id()) AND visible_to_patient)                                                                                                     | 
+ attachments          | staff_all                | ALL    | {authenticated} | staff_of_patient(patient_id)                                                                                                                                     | staff_of_patient(patient_id)
+ audit_log            | staff_read               | SELECT | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | 
+ availability         | clinic_read              | SELECT | {authenticated} | (clinic_id = current_clinic_id())                                                                                                                                | 
+ availability         | staff_all                | ALL    | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | (is_staff() AND (clinic_id = current_clinic_id()))
+ billing_invoices     | billing_invoices_owner   | SELECT | {authenticated} | ((clinic_id = current_clinic_id()) AND is_clinic_owner())                                                                                                        | 
+ billing_profiles     | billing_profile_owner    | ALL    | {authenticated} | ((clinic_id = current_clinic_id()) AND is_clinic_owner())                                                                                                        | ((clinic_id = current_clinic_id()) AND is_clinic_owner())
+ clinic_settings      | clinic_read              | SELECT | {authenticated} | (clinic_id = current_clinic_id())                                                                                                                                | 
+ clinic_settings      | staff_all                | ALL    | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | (is_staff() AND (clinic_id = current_clinic_id()))
+ clinics              | own_clinic               | SELECT | {authenticated} | (id = current_clinic_id())                                                                                                                                       | 
+ consultation_addenda | staff_all                | ALL    | {authenticated} | staff_of_consultation(consultation_id)                                                                                                                           | staff_of_consultation(consultation_id)
+ consultations        | staff_all                | ALL    | {authenticated} | staff_of_patient(patient_id)                                                                                                                                     | staff_of_patient(patient_id)
+ custom_factors       | staff_all                | ALL    | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | (is_staff() AND (clinic_id = current_clinic_id()))
+ custom_fields        | staff_all                | ALL    | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | (is_staff() AND (clinic_id = current_clinic_id()))
+ custom_formulas      | staff_all                | ALL    | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | (is_staff() AND (clinic_id = current_clinic_id()))
+ daily_logs           | patient_insert           | INSERT | {authenticated} |                                                                                                                                                                  | (patient_id = current_patient_id())
+ daily_logs           | patient_read             | SELECT | {authenticated} | (patient_id = current_patient_id())                                                                                                                              | 
+ daily_logs           | patient_update           | UPDATE | {authenticated} | (patient_id = current_patient_id())                                                                                                                              | (patient_id = current_patient_id())
+ daily_logs           | staff_all                | ALL    | {authenticated} | staff_of_patient(patient_id)                                                                                                                                     | staff_of_patient(patient_id)
+ education_materials  | published_read           | SELECT | {authenticated} | (published AND (clinic_id = current_clinic_id()))                                                                                                                | 
+ education_materials  | staff_all                | ALL    | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | (is_staff() AND (clinic_id = current_clinic_id()))
+ equivalent_groups    | clinic_read              | SELECT | {authenticated} | (clinic_id = current_clinic_id())                                                                                                                                | 
+ equivalent_groups    | staff_all                | ALL    | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | (is_staff() AND (clinic_id = current_clinic_id()))
+ exercises            | shared_read              | SELECT | {authenticated} | ((clinic_id IS NULL) OR (clinic_id = current_clinic_id()))                                                                                                       | 
+ exercises            | staff_all                | ALL    | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | (is_staff() AND (clinic_id = current_clinic_id()))
+ foods                | shared_read              | SELECT | {authenticated} | ((clinic_id IS NULL) OR (clinic_id = current_clinic_id()))                                                                                                       | 
+ foods                | staff_all                | ALL    | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | (is_staff() AND (clinic_id = current_clinic_id()))
+ lab_results          | staff_all                | ALL    | {authenticated} | staff_of_patient(patient_id)                                                                                                                                     | staff_of_patient(patient_id)
+ legal_acceptances    | own_or_clinic_read       | SELECT | {authenticated} | ((user_id = auth.uid()) OR (is_staff() AND (clinic_id = current_clinic_id())))                                                                                   | 
+ legal_acceptances    | staff_paper              | INSERT | {authenticated} |                                                                                                                                                                  | ((method = 'papel'::text) AND (document = 'aviso_paciente'::text) AND staff_of_patient(patient_id) AND (recorded_by = auth.uid()) AND (user_id IS NULL) AND (ip IS NULL))
+ macro_presets        | staff_all                | ALL    | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | (is_staff() AND (clinic_id = current_clinic_id()))
+ meal_checks          | patient_insert           | INSERT | {authenticated} |                                                                                                                                                                  | ((patient_id = current_patient_id()) AND ((day >= (CURRENT_DATE - 7)) AND (day <= (CURRENT_DATE + 1))))
+ meal_checks          | patient_read             | SELECT | {authenticated} | (patient_id = current_patient_id())                                                                                                                              | 
+ meal_checks          | patient_update           | UPDATE | {authenticated} | (patient_id = current_patient_id())                                                                                                                              | ((patient_id = current_patient_id()) AND ((day >= (CURRENT_DATE - 7)) AND (day <= (CURRENT_DATE + 1))))
+ meal_checks          | staff_all                | ALL    | {authenticated} | staff_of_patient(patient_id)                                                                                                                                     | staff_of_patient(patient_id)
+ meal_photos          | patient_delete           | DELETE | {authenticated} | (patient_id = current_patient_id())                                                                                                                              | 
+ meal_photos          | patient_insert           | INSERT | {authenticated} |                                                                                                                                                                  | ((patient_id = current_patient_id()) AND (comment IS NULL) AND (commented_at IS NULL) AND (split_part(path, '/'::text, 1) = (current_patient_id())::text))
+ meal_photos          | patient_read             | SELECT | {authenticated} | (patient_id = current_patient_id())                                                                                                                              | 
+ meal_photos          | staff_all                | ALL    | {authenticated} | staff_of_patient(patient_id)                                                                                                                                     | staff_of_patient(patient_id)
+ meal_plans           | patient_read             | SELECT | {authenticated} | ((patient_id = current_patient_id()) AND (status = 'activo'::text))                                                                                              | 
+ meal_plans           | staff_all                | ALL    | {authenticated} | staff_of_patient(patient_id)                                                                                                                                     | staff_of_patient(patient_id)
+ meal_presets         | staff_all                | ALL    | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | (is_staff() AND (clinic_id = current_clinic_id()))
+ messages             | patient_insert           | INSERT | {authenticated} |                                                                                                                                                                  | ((patient_id = current_patient_id()) AND (sender_id = auth.uid()))
+ messages             | patient_read             | SELECT | {authenticated} | (patient_id = current_patient_id())                                                                                                                              | 
+ messages             | staff_all                | ALL    | {authenticated} | staff_of_patient(patient_id)                                                                                                                                     | staff_of_patient(patient_id)
+ objects              | clinic_read              | SELECT | {authenticated} | ((bucket_id = 'clinic'::text) AND (EXISTS ( SELECT 1                                                                                                            +| 
+                      |                          |        |                 |    FROM clinic_settings c                                                                                                                                       +| 
+                      |                          |        |                 |   WHERE (c.logo_path = objects.name))))                                                                                                                          | 
+ objects              | education_read           | SELECT | {authenticated} | ((bucket_id = 'education'::text) AND (EXISTS ( SELECT 1                                                                                                         +| 
+                      |                          |        |                 |    FROM education_materials m                                                                                                                                   +| 
+                      |                          |        |                 |   WHERE ((m.file_path = objects.name) AND m.published))))                                                                                                        | 
+ objects              | patient_meal_photos_read | SELECT | {authenticated} | ((bucket_id = 'patient-files'::text) AND ((storage.foldername(name))[1] = (current_patient_id())::text) AND (EXISTS ( SELECT 1                                  +| 
+                      |                          |        |                 |    FROM meal_photos m                                                                                                                                           +| 
+                      |                          |        |                 |   WHERE (m.path = objects.name))))                                                                                                                               | 
+ objects              | patient_own_files_delete | DELETE | {authenticated} | ((bucket_id = 'patient-files'::text) AND ((storage.foldername(name))[1] = (current_patient_id())::text) AND (EXISTS ( SELECT 1                                  +| 
+                      |                          |        |                 |    FROM meal_photos m                                                                                                                                           +| 
+                      |                          |        |                 |   WHERE (m.path = objects.name))))                                                                                                                               | 
+ objects              | patient_own_files_insert | INSERT | {authenticated} |                                                                                                                                                                  | ((bucket_id = 'patient-files'::text) AND ((storage.foldername(name))[1] = (current_patient_id())::text) AND (patient_file_count() < 200))
+ objects              | patient_own_files_read   | SELECT | {authenticated} | ((bucket_id = 'patient-files'::text) AND ((storage.foldername(name))[1] = (current_patient_id())::text) AND (EXISTS ( SELECT 1                                  +| 
+                      |                          |        |                 |    FROM attachments a                                                                                                                                           +| 
+                      |                          |        |                 |   WHERE ((a.path = objects.name) AND a.visible_to_patient))))                                                                                                    | 
+ objects              | recipes_read             | SELECT | {authenticated} | ((bucket_id = 'recipes'::text) AND (EXISTS ( SELECT 1                                                                                                           +| 
+                      |                          |        |                 |    FROM recipes r                                                                                                                                               +| 
+                      |                          |        |                 |   WHERE (r.image_path = objects.name))))                                                                                                                         | 
+ objects              | staff_clinic_files       | ALL    | {authenticated} | ((bucket_id = ANY (ARRAY['education'::text, 'clinic'::text, 'recipes'::text])) AND is_staff() AND ((storage.foldername(name))[1] = (current_clinic_id())::text)) | ((bucket_id = ANY (ARRAY['education'::text, 'clinic'::text, 'recipes'::text])) AND is_staff() AND ((storage.foldername(name))[1] = (current_clinic_id())::text))
+ objects              | staff_education_read     | SELECT | {authenticated} | ((bucket_id = 'education'::text) AND is_staff() AND (EXISTS ( SELECT 1                                                                                          +| 
+                      |                          |        |                 |    FROM education_materials m                                                                                                                                   +| 
+                      |                          |        |                 |   WHERE (m.file_path = objects.name))))                                                                                                                          | 
+ objects              | staff_legacy_delete      | DELETE | {authenticated} | (is_staff() AND (((bucket_id = 'education'::text) AND (EXISTS ( SELECT 1                                                                                        +| 
+                      |                          |        |                 |    FROM education_materials m                                                                                                                                   +| 
+                      |                          |        |                 |   WHERE (m.file_path = objects.name)))) OR ((bucket_id = 'recipes'::text) AND (EXISTS ( SELECT 1                                                                +| 
+                      |                          |        |                 |    FROM recipes r                                                                                                                                               +| 
+                      |                          |        |                 |   WHERE ((r.image_path = objects.name) AND (r.clinic_id IS NOT NULL)))))))                                                                                       | 
+ objects              | staff_patient_files      | ALL    | {authenticated} | ((bucket_id = 'patient-files'::text) AND staff_of_patient(safe_uuid((storage.foldername(name))[1])))                                                             | ((bucket_id = 'patient-files'::text) AND staff_of_patient(safe_uuid((storage.foldername(name))[1])))
+ patient_routines     | patient_read             | SELECT | {authenticated} | ((patient_id = current_patient_id()) AND active)                                                                                                                 | 
+ patient_routines     | staff_all                | ALL    | {authenticated} | staff_of_patient(patient_id)                                                                                                                                     | staff_of_patient(patient_id)
+ patient_supplements  | patient_read             | SELECT | {authenticated} | ((patient_id = current_patient_id()) AND active)                                                                                                                 | 
+ patient_supplements  | staff_all                | ALL    | {authenticated} | staff_of_patient(patient_id)                                                                                                                                     | staff_of_patient(patient_id)
+ patients             | staff_all                | ALL    | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | (is_staff() AND (clinic_id = current_clinic_id()))
+ payments             | staff_all                | ALL    | {authenticated} | staff_of_patient(patient_id)                                                                                                                                     | staff_of_patient(patient_id)
+ pes_diagnoses        | staff_all                | ALL    | {authenticated} | staff_of_consultation(consultation_id)                                                                                                                           | staff_of_consultation(consultation_id)
+ plan_templates       | staff_all                | ALL    | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | (is_staff() AND (clinic_id = current_clinic_id()))
+ plans                | plans_read               | SELECT | {authenticated} | true                                                                                                                                                             | 
+ platform_settings    | platform_settings_read   | SELECT | {authenticated} | true                                                                                                                                                             | 
+ profiles             | own_profile              | SELECT | {authenticated} | ((id = auth.uid()) OR (is_staff() AND (clinic_id = current_clinic_id())))                                                                                        | 
+ progress_logs        | patient_delete           | DELETE | {authenticated} | (patient_id = current_patient_id())                                                                                                                              | 
+ progress_logs        | patient_insert           | INSERT | {authenticated} |                                                                                                                                                                  | (patient_id = current_patient_id())
+ progress_logs        | patient_read             | SELECT | {authenticated} | (patient_id = current_patient_id())                                                                                                                              | 
+ progress_logs        | staff_all                | ALL    | {authenticated} | staff_of_patient(patient_id)                                                                                                                                     | staff_of_patient(patient_id)
+ push_subscriptions   | own_subscription         | ALL    | {authenticated} | (user_id = auth.uid())                                                                                                                                           | ((user_id = auth.uid()) AND (patient_id = current_patient_id()))
+ quick_notes          | staff_all                | ALL    | {authenticated} | staff_of_patient(patient_id)                                                                                                                                     | staff_of_patient(patient_id)
+ recalls_24h          | patient_delete           | DELETE | {authenticated} | ((patient_id = current_patient_id()) AND (captured_by = 'paciente'::text))                                                                                       | 
+ recalls_24h          | patient_insert           | INSERT | {authenticated} |                                                                                                                                                                  | ((patient_id = current_patient_id()) AND (captured_by = 'paciente'::text))
+ recalls_24h          | patient_read_own         | SELECT | {authenticated} | ((patient_id = current_patient_id()) AND (captured_by = 'paciente'::text))                                                                                       | 
+ recalls_24h          | staff_all                | ALL    | {authenticated} | staff_of_patient(patient_id)                                                                                                                                     | staff_of_patient(patient_id)
+ recipes              | shared_read              | SELECT | {authenticated} | ((clinic_id IS NULL) OR (clinic_id = current_clinic_id()))                                                                                                       | 
+ recipes              | staff_all                | ALL    | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | (is_staff() AND (clinic_id = current_clinic_id()))
+ reference_tables     | shared_read              | SELECT | {authenticated} | ((clinic_id IS NULL) OR (clinic_id = current_clinic_id()))                                                                                                       | 
+ reference_tables     | staff_all                | ALL    | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | (is_staff() AND (clinic_id = current_clinic_id()))
+ reminder_prefs       | patient_insert           | INSERT | {authenticated} |                                                                                                                                                                  | (patient_id = current_patient_id())
+ reminder_prefs       | patient_read             | SELECT | {authenticated} | (patient_id = current_patient_id())                                                                                                                              | 
+ reminder_prefs       | patient_update           | UPDATE | {authenticated} | (patient_id = current_patient_id())                                                                                                                              | (patient_id = current_patient_id())
+ reminder_prefs       | staff_read               | SELECT | {authenticated} | staff_of_patient(patient_id)                                                                                                                                     | 
+ routines             | shared_read              | SELECT | {authenticated} | ((clinic_id IS NULL) OR (clinic_id = current_clinic_id()))                                                                                                       | 
+ routines             | staff_all                | ALL    | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | (is_staff() AND (clinic_id = current_clinic_id()))
+ soap_templates       | staff_all                | ALL    | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | (is_staff() AND (clinic_id = current_clinic_id()))
+ supplements          | shared_read              | SELECT | {authenticated} | ((clinic_id IS NULL) OR (clinic_id = current_clinic_id()))                                                                                                       | 
+ supplements          | staff_all                | ALL    | {authenticated} | (is_staff() AND (clinic_id = current_clinic_id()))                                                                                                               | (is_staff() AND (clinic_id = current_clinic_id()))
+(104 rows)
+
+    table_name    |                                                                                            view_definition                                                                                             
+------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ my_anthropometry |  SELECT id,                                                                                                                                                                                           +
+                  |     patient_id,                                                                                                                                                                                       +
+                  |     measured_at,                                                                                                                                                                                      +
+                  |     weight_kg,                                                                                                                                                                                        +
+                  |     height_cm,                                                                                                                                                                                        +
+                  |     circumferences,                                                                                                                                                                                   +
+                  |     results                                                                                                                                                                                           +
+                  |    FROM anthropometry                                                                                                                                                                                 +
+                  |   WHERE (patient_id = current_patient_id());
+ my_recalls       |  SELECT id,                                                                                                                                                                                           +
+                  |     patient_id,                                                                                                                                                                                       +
+                  |     recall_date,                                                                                                                                                                                      +
+                  |     captured_by,                                                                                                                                                                                      +
+                  |     items,                                                                                                                                                                                            +
+                  |     totals,                                                                                                                                                                                           +
+                  |         CASE                                                                                                                                                                                          +
+                  |             WHEN (captured_by = 'paciente'::text) THEN notes                                                                                                                                          +
+                  |             ELSE NULL::text                                                                                                                                                                           +
+                  |         END AS notes,                                                                                                                                                                                 +
+                  |     created_at                                                                                                                                                                                        +
+                  |    FROM recalls_24h                                                                                                                                                                                   +
+                  |   WHERE (patient_id = current_patient_id());
+ my_patient       |  SELECT id,                                                                                                                                                                                           +
+                  |     user_id,                                                                                                                                                                                          +
+                  |     full_name,                                                                                                                                                                                        +
+                  |     email,                                                                                                                                                                                            +
+                  |     birth_date,                                                                                                                                                                                       +
+                  |     sex,                                                                                                                                                                                              +
+                  |     goal,                                                                                                                                                                                             +
+                  |     pathologies,                                                                                                                                                                                      +
+                  |     allergies,                                                                                                                                                                                        +
+                  |     privacy_accepted_at,                                                                                                                                                                              +
+                  |     target_weight_kg                                                                                                                                                                                  +
+                  |    FROM patients                                                                                                                                                                                      +
+                  |   WHERE (user_id = auth.uid());
+ admin_clinics    |  SELECT c.id,                                                                                                                                                                                         +
+                  |     c.name,                                                                                                                                                                                           +
+                  |     c.plan,                                                                                                                                                                                           +
+                  |     p.name AS plan_name,                                                                                                                                                                              +
+                  |     p.price_mxn,                                                                                                                                                                                      +
+                  |     p.ai_budget_usd,                                                                                                                                                                                  +
+                  |     c.ai_budget_override_usd,                                                                                                                                                                         +
+                  |     c.status,                                                                                                                                                                                         +
+                  |     c.trial_ends_at,                                                                                                                                                                                  +
+                  |     c.current_period_end,                                                                                                                                                                             +
+                  |     c.cancel_at_period_end,                                                                                                                                                                           +
+                  |     c.comp_until,                                                                                                                                                                                     +
+                  |     ((c.status = 'activa'::text) AND (c.comp_until IS NOT NULL) AND (c.comp_until > now()) AND (c.stripe_subscription_id IS NULL)) AS in_comp,                                                        +
+                  |     (c.stripe_subscription_id IS NOT NULL) AS paying,                                                                                                                                                 +
+                  |     c.stripe_customer_id,                                                                                                                                                                             +
+                  |     c.payment_failed_at,                                                                                                                                                                              +
+                  |     c.created_at,                                                                                                                                                                                     +
+                  |     c.owner_id,                                                                                                                                                                                       +
+                  |     u.email AS owner_email,                                                                                                                                                                           +
+                  |     pr.full_name AS owner_name,                                                                                                                                                                       +
+                  |     u.last_sign_in_at,                                                                                                                                                                                +
+                  |     u.email_confirmed_at,                                                                                                                                                                             +
+                  |     ( SELECT count(*) AS count                                                                                                                                                                        +
+                  |            FROM patients pt                                                                                                                                                                           +
+                  |           WHERE ((pt.clinic_id = c.id) AND pt.active)) AS active_patients,                                                                                                                            +
+                  |     ( SELECT count(*) AS count                                                                                                                                                                        +
+                  |            FROM patients pt                                                                                                                                                                           +
+                  |           WHERE (pt.clinic_id = c.id)) AS total_patients,                                                                                                                                             +
+                  |     ( SELECT count(*) AS count                                                                                                                                                                        +
+                  |            FROM profiles s                                                                                                                                                                            +
+                  |           WHERE ((s.clinic_id = c.id) AND (s.role = 'nutriologo'::user_role))) AS staff_count,                                                                                                        +
+                  |     ( SELECT COALESCE(sum(a.cost_usd), (0)::numeric) AS "coalesce"                                                                                                                                    +
+                  |            FROM ai_usage a                                                                                                                                                                            +
+                  |           WHERE ((a.clinic_id = c.id) AND (a.created_at >= (date_trunc('month'::text, (now() AT TIME ZONE 'America/Mexico_City'::text)) AT TIME ZONE 'America/Mexico_City'::text)))) AS ai_cost_month,+
+                  |     ( SELECT COALESCE(sum(b.amount_mxn), (0)::numeric) AS "coalesce"                                                                                                                                  +
+                  |            FROM billing_invoices b                                                                                                                                                                    +
+                  |           WHERE (b.clinic_id = c.id)) AS revenue_total,                                                                                                                                               +
+                  |     (EXISTS ( SELECT 1                                                                                                                                                                                +
+                  |            FROM billing_profiles bp                                                                                                                                                                   +
+                  |           WHERE (bp.clinic_id = c.id))) AS has_fiscal,                                                                                                                                                +
+                  |     ( SELECT count(*) AS count                                                                                                                                                                        +
+                  |            FROM arco_requests r                                                                                                                                                                       +
+                  |           WHERE ((r.clinic_id = c.id) AND (r.status = ANY (ARRAY['recibida'::text, 'en_proceso'::text])) AND (r.due_at < now()))) AS arco_overdue                                                     +
+                  |    FROM (((clinics c                                                                                                                                                                                  +
+                  |      JOIN plans p ON ((p.code = c.plan)))                                                                                                                                                             +
+                  |      LEFT JOIN auth.users u ON ((u.id = c.owner_id)))                                                                                                                                                 +
+                  |      LEFT JOIN profiles pr ON ((pr.id = c.owner_id)));
+(4 rows)
+
+     relname      | reloptions 
+------------------+------------
+ my_anthropometry | 
+ my_recalls       | 
+ my_patient       | 
+ admin_clinics    | 
+(4 rows)
+
+    grantee    |      table_name      |                       string_agg                        
+---------------+----------------------+---------------------------------------------------------
+ anon          | admin_actions        | INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT
+ authenticated | admin_actions        | REFERENCES,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,TRIGGER
+ anon          | ai_messages          | REFERENCES,TRIGGER,INSERT,SELECT,UPDATE,DELETE,TRUNCATE
+ authenticated | ai_messages          | SELECT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,INSERT
+ anon          | ai_settings          | INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT
+ authenticated | ai_settings          | SELECT,TRIGGER,INSERT,REFERENCES,TRUNCATE,DELETE,UPDATE
+ anon          | ai_usage             | SELECT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,INSERT
+ authenticated | ai_usage             | TRIGGER,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES
+ anon          | anthropometry        | REFERENCES,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,TRIGGER
+ authenticated | anthropometry        | DELETE,TRIGGER,REFERENCES,TRUNCATE,UPDATE,SELECT,INSERT
+ anon          | appointments         | TRIGGER,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES
+ authenticated | appointments         | REFERENCES,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,TRIGGER
+ anon          | arco_requests        | REFERENCES,SELECT,UPDATE,DELETE,INSERT,TRUNCATE,TRIGGER
+ authenticated | arco_requests        | INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT
+ anon          | attachments          | TRIGGER,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES
+ authenticated | attachments          | INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT
+ anon          | audit_log            | INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT
+ authenticated | audit_log            | SELECT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,INSERT
+ anon          | availability         | TRIGGER,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES
+ authenticated | availability         | INSERT,SELECT,UPDATE,DELETE,REFERENCES,TRUNCATE,TRIGGER
+ anon          | billing_events       | INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT
+ authenticated | billing_events       | INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER,SELECT
+ anon          | billing_invoices     | SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES,INSERT,TRIGGER
+ authenticated | billing_invoices     | TRUNCATE,INSERT,SELECT,UPDATE,DELETE,REFERENCES,TRIGGER
+ anon          | billing_profiles     | TRIGGER,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES
+ authenticated | billing_profiles     | TRIGGER,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES
+ anon          | clinic_settings      | SELECT,TRIGGER,REFERENCES,UPDATE,DELETE,TRUNCATE,INSERT
+ authenticated | clinic_settings      | UPDATE,SELECT,INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE
+ anon          | clinics              | REFERENCES,TRIGGER,INSERT,SELECT,UPDATE,DELETE,TRUNCATE
+ authenticated | clinics              | TRUNCATE,UPDATE,DELETE,INSERT,REFERENCES,TRIGGER,SELECT
+ anon          | consultation_addenda | TRUNCATE,DELETE,UPDATE,SELECT,INSERT,TRIGGER,REFERENCES
+ authenticated | consultation_addenda | TRIGGER,TRUNCATE,DELETE,UPDATE,SELECT,INSERT,REFERENCES
+ anon          | consultations        | INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER,SELECT
+ authenticated | consultations        | TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT,INSERT
+ anon          | custom_factors       | INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER
+ authenticated | custom_factors       | REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT,INSERT,TRIGGER
+ anon          | custom_fields        | REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT,INSERT,TRIGGER
+ authenticated | custom_fields        | SELECT,REFERENCES,UPDATE,DELETE,TRUNCATE,TRIGGER,INSERT
+ anon          | custom_formulas      | DELETE,REFERENCES,TRUNCATE,UPDATE,SELECT,INSERT,TRIGGER
+ authenticated | custom_formulas      | UPDATE,TRUNCATE,DELETE,SELECT,INSERT,REFERENCES,TRIGGER
+ anon          | daily_logs           | TRIGGER,UPDATE,SELECT,INSERT,DELETE,TRUNCATE,REFERENCES
+ authenticated | daily_logs           | UPDATE,SELECT,INSERT,DELETE,TRIGGER,REFERENCES,TRUNCATE
+ anon          | education_materials  | REFERENCES,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,TRIGGER
+ authenticated | education_materials  | INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER
+ anon          | equivalent_groups    | INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER
+ authenticated | equivalent_groups    | TRUNCATE,TRIGGER,REFERENCES,DELETE,UPDATE,SELECT,INSERT
+ anon          | exercises            | INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT
+ authenticated | exercises            | INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT
+ anon          | foods                | TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT,INSERT
+ authenticated | foods                | TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT,INSERT
+ anon          | lab_results          | TRIGGER,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES
+ authenticated | lab_results          | REFERENCES,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,TRIGGER
+ anon          | legal_acceptances    | SELECT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,INSERT
+ authenticated | legal_acceptances    | UPDATE,INSERT,SELECT,DELETE,TRUNCATE,REFERENCES,TRIGGER
+ anon          | macro_presets        | TRIGGER,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES
+ authenticated | macro_presets        | INSERT,SELECT,TRIGGER,UPDATE,DELETE,TRUNCATE,REFERENCES
+ anon          | meal_checks          | TRIGGER,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES
+ authenticated | meal_checks          | DELETE,INSERT,SELECT,UPDATE,TRUNCATE,REFERENCES,TRIGGER
+ anon          | meal_photos          | INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT
+ authenticated | meal_photos          | INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT
+ anon          | meal_plans           | REFERENCES,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,TRIGGER
+ authenticated | meal_plans           | UPDATE,TRIGGER,REFERENCES,TRUNCATE,DELETE,SELECT,INSERT
+ anon          | meal_presets         | TRIGGER,REFERENCES,SELECT,UPDATE,DELETE,TRUNCATE,INSERT
+ authenticated | meal_presets         | INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT
+ anon          | messages             | SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER
+ authenticated | messages             | INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER
+ authenticated | my_anthropometry     | INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT
+ authenticated | my_patient           | REFERENCES,TRUNCATE,DELETE,TRIGGER,UPDATE,SELECT,INSERT
+ authenticated | my_recalls           | SELECT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,INSERT
+ anon          | patient_routines     | SELECT,DELETE,TRUNCATE,REFERENCES,TRIGGER,UPDATE,INSERT
+ authenticated | patient_routines     | SELECT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,INSERT
+ anon          | patient_supplements  | INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT
+ authenticated | patient_supplements  | INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT
+ anon          | patients             | REFERENCES,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,TRIGGER
+ authenticated | patients             | TRIGGER,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES
+ anon          | payments             | TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT,INSERT
+ authenticated | payments             | TRIGGER,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES
+ anon          | pes_diagnoses        | TRIGGER,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES
+ authenticated | pes_diagnoses        | SELECT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,INSERT
+ anon          | plan_templates       | REFERENCES,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,TRIGGER
+ authenticated | plan_templates       | INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT
+ anon          | plans                | TRIGGER,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES
+ authenticated | plans                | TRIGGER,INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES
+ anon          | platform_admins      | SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER
+ authenticated | platform_admins      | TRUNCATE,TRIGGER,INSERT,SELECT,UPDATE,DELETE,REFERENCES
+ anon          | platform_settings    | TRUNCATE,TRIGGER,INSERT,SELECT,UPDATE,DELETE,REFERENCES
+ authenticated | platform_settings    | UPDATE,INSERT,SELECT,DELETE,TRUNCATE,REFERENCES,TRIGGER
+ anon          | profiles             | SELECT,TRUNCATE,TRIGGER,REFERENCES
+ authenticated | profiles             | TRUNCATE,SELECT,REFERENCES,TRIGGER
+ anon          | progress_logs        | INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT
+ authenticated | progress_logs        | INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT
+ anon          | push_subscriptions   | SELECT,INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE
+ authenticated | push_subscriptions   | SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES,INSERT,TRIGGER
+ anon          | quick_notes          | TRUNCATE,TRIGGER,INSERT,SELECT,UPDATE,DELETE,REFERENCES
+ authenticated | quick_notes          | TRUNCATE,INSERT,SELECT,UPDATE,DELETE,REFERENCES,TRIGGER
+ anon          | recalls_24h          | INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER
+ authenticated | recalls_24h          | SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER
+ anon          | recipes              | SELECT,UPDATE,TRUNCATE,REFERENCES,TRIGGER,DELETE,INSERT
+ authenticated | recipes              | UPDATE,INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,SELECT
+ anon          | reference_tables     | REFERENCES,TRIGGER,TRUNCATE,DELETE,UPDATE,SELECT,INSERT
+ authenticated | reference_tables     | INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT
+ anon          | reminder_prefs       | INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER
+ authenticated | reminder_prefs       | INSERT,SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER
+ anon          | routines             | SELECT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,INSERT
+ authenticated | routines             | DELETE,INSERT,SELECT,UPDATE,TRUNCATE,REFERENCES,TRIGGER
+ anon          | soap_templates       | INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT
+ authenticated | soap_templates       | SELECT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,INSERT
+ anon          | supplements          | SELECT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER,INSERT
+ authenticated | supplements          | INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT
+(109 rows)
+
+           proname           | prosecdef | anon_exec | auth_exec 
+-----------------------------+-----------+-----------+-----------
+ accept_privacy              | t         | t         | t
+ add_business_days           | f         | t         | t
+ admin_actions_immutable     | f         | t         | t
+ admin_metrics               | t         | f         | f
+ ai_reserve                  | t         | f         | f
+ arco_guard                  | t         | f         | f
+ arco_limit                  | t         | f         | f
+ audit_trigger               | t         | t         | t
+ billing_profiles_touch      | f         | t         | t
+ busy_slots                  | t         | t         | t
+ cancel_my_appointment       | t         | t         | t
+ cash_dist                   | f         | t         | t
+ choose_plan                 | t         | f         | t
+ clinic_is_active            | t         | f         | t
+ clinic_of_user              | t         | f         | f
+ close_clinic_periods        | t         | f         | f
+ create_clinic               | t         | f         | f
+ current_clinic_id           | t         | t         | t
+ current_patient_id          | t         | t         | t
+ date_dist                   | f         | t         | t
+ enforce_patient_limit       | t         | f         | f
+ float4_dist                 | f         | t         | t
+ float8_dist                 | f         | t         | t
+ gbt_bit_compress            | f         | t         | t
+ gbt_bit_consistent          | f         | t         | t
+ gbt_bit_penalty             | f         | t         | t
+ gbt_bit_picksplit           | f         | t         | t
+ gbt_bit_same                | f         | t         | t
+ gbt_bit_union               | f         | t         | t
+ gbt_bool_compress           | f         | t         | t
+ gbt_bool_consistent         | f         | t         | t
+ gbt_bool_fetch              | f         | t         | t
+ gbt_bool_penalty            | f         | t         | t
+ gbt_bool_picksplit          | f         | t         | t
+ gbt_bool_same               | f         | t         | t
+ gbt_bool_union              | f         | t         | t
+ gbt_bpchar_compress         | f         | t         | t
+ gbt_bpchar_consistent       | f         | t         | t
+ gbt_bytea_compress          | f         | t         | t
+ gbt_bytea_consistent        | f         | t         | t
+ gbt_bytea_penalty           | f         | t         | t
+ gbt_bytea_picksplit         | f         | t         | t
+ gbt_bytea_same              | f         | t         | t
+ gbt_bytea_union             | f         | t         | t
+ gbt_cash_compress           | f         | t         | t
+ gbt_cash_consistent         | f         | t         | t
+ gbt_cash_distance           | f         | t         | t
+ gbt_cash_fetch              | f         | t         | t
+ gbt_cash_penalty            | f         | t         | t
+ gbt_cash_picksplit          | f         | t         | t
+ gbt_cash_same               | f         | t         | t
+ gbt_cash_union              | f         | t         | t
+ gbt_date_compress           | f         | t         | t
+ gbt_date_consistent         | f         | t         | t
+ gbt_date_distance           | f         | t         | t
+ gbt_date_fetch              | f         | t         | t
+ gbt_date_penalty            | f         | t         | t
+ gbt_date_picksplit          | f         | t         | t
+ gbt_date_same               | f         | t         | t
+ gbt_date_union              | f         | t         | t
+ gbt_decompress              | f         | t         | t
+ gbt_enum_compress           | f         | t         | t
+ gbt_enum_consistent         | f         | t         | t
+ gbt_enum_fetch              | f         | t         | t
+ gbt_enum_penalty            | f         | t         | t
+ gbt_enum_picksplit          | f         | t         | t
+ gbt_enum_same               | f         | t         | t
+ gbt_enum_union              | f         | t         | t
+ gbt_float4_compress         | f         | t         | t
+ gbt_float4_consistent       | f         | t         | t
+ gbt_float4_distance         | f         | t         | t
+ gbt_float4_fetch            | f         | t         | t
+ gbt_float4_penalty          | f         | t         | t
+ gbt_float4_picksplit        | f         | t         | t
+ gbt_float4_same             | f         | t         | t
+ gbt_float4_union            | f         | t         | t
+ gbt_float8_compress         | f         | t         | t
+ gbt_float8_consistent       | f         | t         | t
+ gbt_float8_distance         | f         | t         | t
+ gbt_float8_fetch            | f         | t         | t
+ gbt_float8_penalty          | f         | t         | t
+ gbt_float8_picksplit        | f         | t         | t
+ gbt_float8_same             | f         | t         | t
+ gbt_float8_union            | f         | t         | t
+ gbt_inet_compress           | f         | t         | t
+ gbt_inet_consistent         | f         | t         | t
+ gbt_inet_penalty            | f         | t         | t
+ gbt_inet_picksplit          | f         | t         | t
+ gbt_inet_same               | f         | t         | t
+ gbt_inet_union              | f         | t         | t
+ gbt_int2_compress           | f         | t         | t
+ gbt_int2_consistent         | f         | t         | t
+ gbt_int2_distance           | f         | t         | t
+ gbt_int2_fetch              | f         | t         | t
+ gbt_int2_penalty            | f         | t         | t
+ gbt_int2_picksplit          | f         | t         | t
+ gbt_int2_same               | f         | t         | t
+ gbt_int2_union              | f         | t         | t
+ gbt_int4_compress           | f         | t         | t
+ gbt_int4_consistent         | f         | t         | t
+ gbt_int4_distance           | f         | t         | t
+ gbt_int4_fetch              | f         | t         | t
+ gbt_int4_penalty            | f         | t         | t
+ gbt_int4_picksplit          | f         | t         | t
+ gbt_int4_same               | f         | t         | t
+ gbt_int4_union              | f         | t         | t
+ gbt_int8_compress           | f         | t         | t
+ gbt_int8_consistent         | f         | t         | t
+ gbt_int8_distance           | f         | t         | t
+ gbt_int8_fetch              | f         | t         | t
+ gbt_int8_penalty            | f         | t         | t
+ gbt_int8_picksplit          | f         | t         | t
+ gbt_int8_same               | f         | t         | t
+ gbt_int8_union              | f         | t         | t
+ gbt_intv_compress           | f         | t         | t
+ gbt_intv_consistent         | f         | t         | t
+ gbt_intv_decompress         | f         | t         | t
+ gbt_intv_distance           | f         | t         | t
+ gbt_intv_fetch              | f         | t         | t
+ gbt_intv_penalty            | f         | t         | t
+ gbt_intv_picksplit          | f         | t         | t
+ gbt_intv_same               | f         | t         | t
+ gbt_intv_union              | f         | t         | t
+ gbt_macad8_compress         | f         | t         | t
+ gbt_macad8_consistent       | f         | t         | t
+ gbt_macad8_fetch            | f         | t         | t
+ gbt_macad8_penalty          | f         | t         | t
+ gbt_macad8_picksplit        | f         | t         | t
+ gbt_macad8_same             | f         | t         | t
+ gbt_macad8_union            | f         | t         | t
+ gbt_macad_compress          | f         | t         | t
+ gbt_macad_consistent        | f         | t         | t
+ gbt_macad_fetch             | f         | t         | t
+ gbt_macad_penalty           | f         | t         | t
+ gbt_macad_picksplit         | f         | t         | t
+ gbt_macad_same              | f         | t         | t
+ gbt_macad_union             | f         | t         | t
+ gbt_numeric_compress        | f         | t         | t
+ gbt_numeric_consistent      | f         | t         | t
+ gbt_numeric_penalty         | f         | t         | t
+ gbt_numeric_picksplit       | f         | t         | t
+ gbt_numeric_same            | f         | t         | t
+ gbt_numeric_union           | f         | t         | t
+ gbt_oid_compress            | f         | t         | t
+ gbt_oid_consistent          | f         | t         | t
+ gbt_oid_distance            | f         | t         | t
+ gbt_oid_fetch               | f         | t         | t
+ gbt_oid_penalty             | f         | t         | t
+ gbt_oid_picksplit           | f         | t         | t
+ gbt_oid_same                | f         | t         | t
+ gbt_oid_union               | f         | t         | t
+ gbt_text_compress           | f         | t         | t
+ gbt_text_consistent         | f         | t         | t
+ gbt_text_penalty            | f         | t         | t
+ gbt_text_picksplit          | f         | t         | t
+ gbt_text_same               | f         | t         | t
+ gbt_text_union              | f         | t         | t
+ gbt_time_compress           | f         | t         | t
+ gbt_time_consistent         | f         | t         | t
+ gbt_time_distance           | f         | t         | t
+ gbt_time_fetch              | f         | t         | t
+ gbt_time_penalty            | f         | t         | t
+ gbt_time_picksplit          | f         | t         | t
+ gbt_time_same               | f         | t         | t
+ gbt_time_union              | f         | t         | t
+ gbt_timetz_compress         | f         | t         | t
+ gbt_timetz_consistent       | f         | t         | t
+ gbt_ts_compress             | f         | t         | t
+ gbt_ts_consistent           | f         | t         | t
+ gbt_ts_distance             | f         | t         | t
+ gbt_ts_fetch                | f         | t         | t
+ gbt_ts_penalty              | f         | t         | t
+ gbt_ts_picksplit            | f         | t         | t
+ gbt_ts_same                 | f         | t         | t
+ gbt_ts_union                | f         | t         | t
+ gbt_tstz_compress           | f         | t         | t
+ gbt_tstz_consistent         | f         | t         | t
+ gbt_tstz_distance           | f         | t         | t
+ gbt_uuid_compress           | f         | t         | t
+ gbt_uuid_consistent         | f         | t         | t
+ gbt_uuid_fetch              | f         | t         | t
+ gbt_uuid_penalty            | f         | t         | t
+ gbt_uuid_picksplit          | f         | t         | t
+ gbt_uuid_same               | f         | t         | t
+ gbt_uuid_union              | f         | t         | t
+ gbt_var_decompress          | f         | t         | t
+ gbt_var_fetch               | f         | t         | t
+ gbtreekey16_in              | f         | t         | t
+ gbtreekey16_out             | f         | t         | t
+ gbtreekey2_in               | f         | t         | t
+ gbtreekey2_out              | f         | t         | t
+ gbtreekey32_in              | f         | t         | t
+ gbtreekey32_out             | f         | t         | t
+ gbtreekey4_in               | f         | t         | t
+ gbtreekey4_out              | f         | t         | t
+ gbtreekey8_in               | f         | t         | t
+ gbtreekey8_out              | f         | t         | t
+ gbtreekey_var_in            | f         | t         | t
+ gbtreekey_var_out           | f         | t         | t
+ guard_patient_appointment   | t         | f         | f
+ guard_patient_volume        | t         | f         | f
+ handle_new_user             | t         | t         | t
+ int2_dist                   | f         | t         | t
+ int4_dist                   | f         | t         | t
+ int8_dist                   | f         | t         | t
+ interval_dist               | f         | t         | t
+ is_clinic_owner             | t         | f         | t
+ is_staff                    | t         | t         | t
+ mark_thread_read            | t         | t         | t
+ mfa_ok                      | t         | f         | t
+ mx_holiday                  | f         | t         | t
+ oid_dist                    | f         | t         | t
+ patient_file_count          | t         | f         | t
+ protect_base_rows           | f         | t         | t
+ protect_signed_consultation | f         | t         | t
+ protect_signed_pes          | f         | t         | t
+ safe_uuid                   | f         | t         | t
+ set_ai_clinic               | t         | f         | f
+ set_appointment_clinic      | t         | f         | f
+ set_cancel                  | t         | f         | t
+ set_legal_clinic            | t         | f         | f
+ staff_of_consultation       | t         | t         | t
+ staff_of_patient            | t         | t         | t
+ time_dist                   | f         | t         | t
+ ts_dist                     | f         | t         | t
+ tstz_dist                   | f         | t         | t
+(226 rows)
+
+      id       | public | file_size_limit |                      allowed_mime_types                      
+---------------+--------+-----------------+--------------------------------------------------------------
+ patient-files | f      |        10485760 | {application/pdf,image/jpeg,image/png,image/webp,image/heic}
+ education     | f      |        20971520 | {application/pdf,image/jpeg,image/png,image/webp}
+ clinic        | f      |         2097152 | {image/jpeg,image/png,image/webp}
+ recipes       | f      |         5242880 | {image/jpeg,image/png,image/webp}
+(4 rows)
+

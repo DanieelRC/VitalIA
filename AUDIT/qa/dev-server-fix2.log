@@ -1,0 +1,39 @@
+
+> vitalia@0.1.0 dev
+> next dev --turbopack
+
+ ⚠ Port 3000 is in use by process 23632, using available port 3001 instead.
+   ▲ Next.js 15.5.28 (Turbopack)
+   - Local:        http://localhost:3001
+   - Network:      http://192.168.0.185:3001
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · serverActions
+
+ ✓ Starting...
+ ○ Compiling middleware ...
+ ✓ Compiled middleware in 556ms
+ ✓ Ready in 4.4s
+ ○ Compiling /login ...
+ ✓ Compiled /login in 6s
+ GET /login 200 in 7222ms
+ ○ Compiling / ...
+ ✓ Compiled / in 794ms
+ GET / 200 in 1312ms
+ POST /login 303 in 2024ms
+ ○ Compiling /consultorio/pacientes/nuevo ...
+ ✓ Compiled /consultorio/pacientes/nuevo in 1149ms
+ GET /consultorio 200 in 2694ms
+ GET /consultorio/pacientes/nuevo 200 in 3068ms
+ ○ Compiling /consultorio/pacientes/[id] ...
+ ✓ Compiled /consultorio/pacientes/[id] in 712ms
+ GET /consultorio/pacientes/c70fddf5-95ab-4591-aa28-8209b8a77878 200 in 2504ms
+ POST /consultorio/pacientes/nuevo 303 in 2953ms
+ POST /consultorio/pacientes/c70fddf5-95ab-4591-aa28-8209b8a77878 200 in 309ms
+ GET /consultorio/pacientes/nuevo 200 in 1047ms
+ GET /consultorio/pacientes/c7f6a18d-6e94-4155-94cb-f8c64a1e5096 200 in 1004ms
+ POST /consultorio/pacientes/nuevo 303 in 1488ms
+ POST /consultorio/pacientes/c7f6a18d-6e94-4155-94cb-f8c64a1e5096 200 in 881ms
+ GET /consultorio/pacientes/c7f6a18d-6e94-4155-94cb-f8c64a1e5096 200 in 1797ms
+ POST /consultorio/pacientes/c7f6a18d-6e94-4155-94cb-f8c64a1e5096 200 in 812ms
+ GET /consultorio/pacientes/c7f6a18d-6e94-4155-94cb-f8c64a1e5096 200 in 1294ms

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createAdminClient, createClient, requireRole } from "@/lib/supabase/server";
+import { portalAccess } from "@/lib/patient-access";
 import type { FormState } from "@/components/form";
 
 const list = (v: unknown) => String(v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
@@ -41,6 +42,11 @@ function parsePatient(fd: FormData) {
     },
   } as const;
 }
+
+const ACCESS_ERROR = {
+  active: "El paciente ya activó su cuenta. Si olvidó su contraseña, puede restablecerla desde «¿Olvidaste tu contraseña?» al iniciar sesión.",
+  foreign: "Ese correo ya pertenece a otra cuenta de VitalIA. Verifica el correo del paciente.",
+} as const;
 
 async function invite(email: string, fullName: string) {
   const admin = createAdminClient();
@@ -85,9 +91,16 @@ export async function resendInvite(id: string): Promise<FormState> {
   const supabase = await createClient();
   const { data: p } = await supabase.from("patients").select("email, full_name, user_id").eq("id", id).single();
   if (!p) return { error: "Paciente no encontrado." };
-  if (p.user_id) return { error: "El paciente ya activó su cuenta." };
-  const err = await invite(p.email, p.full_name);
-  if (err) return { error: err };
+  const access = await portalAccess(p.user_id, p.email);
+  if (access === "active" || access === "foreign") return { error: ACCESS_ERROR[access] };
+  if (access === "pending") {
+    // La cuenta ya existe (se creó con la invitación anterior): se manda al correo del paciente un enlace para crear su contraseña
+    const { error } = await supabase.auth.resetPasswordForEmail(p.email, { redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/invitacion` });
+    if (error) return { error: "No se pudo enviar la invitación. Intenta de nuevo en unos minutos." };
+  } else {
+    const err = await invite(p.email, p.full_name);
+    if (err) return { error: /already.*registered/i.test(err) ? ACCESS_ERROR.foreign : err };
+  }
   await supabase.from("patients").update({ invited_at: new Date().toISOString() }).eq("id", id);
   revalidatePath(`/consultorio/pacientes/${id}`);
   return { ok: "Invitación enviada." };
@@ -107,13 +120,16 @@ export async function createInviteLink(id: string): Promise<{ link?: string; err
 
   const admin = createAdminClient();
   const redirectTo = `${site}/invitacion`;
-  // Cuenta nueva → invitación; cuenta ya creada (aún sin activar o con contraseña olvidada) → recuperación
-  let res = await admin.auth.admin.generateLink({ type: "invite", email: p.email, options: { data: { full_name: p.full_name }, redirectTo } });
-  let type: "invite" | "recovery" = "invite";
-  if (res.error) {
-    res = await admin.auth.admin.generateLink({ type: "recovery", email: p.email, options: { redirectTo } });
-    type = "recovery";
-  }
+  // Sin cuenta → invitación. Cuenta del propio paciente que nunca ha entrado → recuperación (para crear su contraseña).
+  // Nunca un enlace para otra cuenta o una ya activa: iniciaría sesión como esa persona.
+  const access = await portalAccess(p.user_id, p.email);
+  if (access === "active" || access === "foreign") return { error: ACCESS_ERROR[access] };
+  const type: "invite" | "recovery" = access === "pending" ? "recovery" : "invite";
+  const res = type === "invite"
+    ? await admin.auth.admin.generateLink({ type: "invite", email: p.email, options: { data: { full_name: p.full_name }, redirectTo } })
+    : await admin.auth.admin.generateLink({ type: "recovery", email: p.email, options: { redirectTo } });
+  // La invitación falla si el correo ya tiene una cuenta que no es de este expediente
+  if (res.error && type === "invite") return { error: /already|registered|exists/i.test(res.error.message) ? ACCESS_ERROR.foreign : "No se pudo generar el enlace." };
   const hash = res.data?.properties?.hashed_token;
   if (res.error || !hash) return { error: "No se pudo generar el enlace." };
   await supabase.from("patients").update({ invited_at: new Date().toISOString() }).eq("id", id);

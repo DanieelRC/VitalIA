@@ -1,0 +1,94 @@
+Unable to find image 'semgrep/semgrep:1.100.0' locally
+1.100.0: Pulling from semgrep/semgrep
+ddc5cfbf231d: Pulling fs layer
+575b0dd3488c: Pulling fs layer
+bac327f18f33: Pulling fs layer
+976ae72214aa: Pulling fs layer
+db1f0922958c: Pulling fs layer
+3fbcb2ac3eea: Pulling fs layer
+ffb835ed7c5c: Pulling fs layer
+65d630d78956: Pulling fs layer
+1a57d31be77e: Pulling fs layer
+cd217f16177e: Pulling fs layer
+98636e63ee65: Pulling fs layer
+85ca63dac148: Pulling fs layer
+3c06adda935f: Pulling fs layer
+b57ef7faef90: Pulling fs layer
+a391b4a478bc: Pulling fs layer
+38a8310d387e: Pulling fs layer
+630256723c33: Pulling fs layer
+f4d80a761251: Pulling fs layer
+630256723c33: Download complete
+ddc5cfbf231d: Download complete
+85ca63dac148: Download complete
+1a57d31be77e: Download complete
+db1f0922958c: Download complete
+575b0dd3488c: Download complete
+3c06adda935f: Download complete
+65d630d78956: Download complete
+976ae72214aa: Download complete
+f4d80a761251: Download complete
+38a8310d387e: Download complete
+38a8310d387e: Pull complete
+f4d80a761251: Pull complete
+3fbcb2ac3eea: Download complete
+cd217f16177e: Download complete
+98636e63ee65: Download complete
+bac327f18f33: Download complete
+ffb835ed7c5c: Download complete
+976ae72214aa: Pull complete
+98636e63ee65: Pull complete
+575b0dd3488c: Pull complete
+bac327f18f33: Pull complete
+b57ef7faef90: Download complete
+a391b4a478bc: Download complete
+3fbcb2ac3eea: Pull complete
+cd217f16177e: Pull complete
+ffb835ed7c5c: Pull complete
+b57ef7faef90: Pull complete
+db1f0922958c: Pull complete
+630256723c33: Pull complete
+1a57d31be77e: Pull complete
+3c06adda935f: Pull complete
+65d630d78956: Pull complete
+85ca63dac148: Pull complete
+a391b4a478bc: Pull complete
+ddc5cfbf231d: Pull complete
+Digest: sha256:7acf76eaa621465588fdfcc84f46fd7ea1e8337ebb1aa1ed6f4685f6eedaec25
+Status: Downloaded newer image for semgrep/semgrep:1.100.0
+METRICS: Using configs from the Registry (like --config=p/ci) reports pseudonymous rule metrics to semgrep.dev.
+To disable Registry rule metrics, use "--metrics=off".
+Using configs only from local files (like --config=xyz.yml) does not enable metrics.
+
+More information: https://semgrep.dev/docs/metrics
+
+               
+               
+┌─────────────┐
+│ Scan Status │
+└─────────────┘
+  Scanning 256 files tracked by git with 598 Code rules:
+                                                                                                                        
+  Language      Rules   Files          Origin      Rules                                                                
+ ─────────────────────────────        ───────────────────                                                               
+  <multilang>      41     255          Community     598                                                                
+  ts               74     235                                                                                           
+  html              1       2                                                                                           
+                                                                                                                        
+                
+                
+┌──────────────┐
+│ Scan Summary │
+└──────────────┘
+Some files were skipped or only partially analyzed.
+  Scan was limited to files tracked by git.
+  Scan skipped: 1 files matching .semgrepignore patterns
+  For a full list of skipped files, run semgrep with the --verbose flag.
+
+(need more rules? `semgrep login` for additional free Semgrep Registry rules)
+
+Ran 116 rules on 255 files: 0 findings.
+
+A new version of Semgrep is available. See https://semgrep.dev/docs/upgrading
+If Semgrep missed a finding, please send us feedback to let us know!
+See https://semgrep.dev/docs/reporting-false-negatives/

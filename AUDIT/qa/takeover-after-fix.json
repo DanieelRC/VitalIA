@@ -1,0 +1,12 @@
+{
+  "enlace_tipo": null,
+  "mensaje": "Ese correo ya pertenece a otra cuenta de VitalIA. Verifica el correo del paciente.",
+  "estado_tarjeta": [
+    "Invitación enviada 17 nov 2026, 6:01 p.m. · el paciente todavía no entra a su portal.",
+    "Invitación enviada 17 nov 2026, 6:01 p.m. · el paciente todavía no entra a su portal."
+  ],
+  "legitimo_tipos": [
+    "invite",
+    "recovery"
+  ]
+}

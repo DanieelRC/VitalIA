@@ -57,6 +57,31 @@ await admin.from("recalls_24h").insert({ patient_id: A.p.id, captured_by: "nutri
 const { data: rawRec } = await c.from("recalls_24h").select("notes");
 const { data: myRec } = await c.from("my_recalls").select("notes");
 check("Paciente no puede leer notas de recordatorios capturados en consulta", (rawRec ?? []).length === 0 && myRec.length === 1 && myRec[0].notes === null);
+
+// Las vistas del paciente son de solo lectura (antes corrían con privilegios del dueño y aceptaban escrituras)
+const { data: anthRow } = await admin.from("anthropometry").select("id, weight_kg").eq("patient_id", A.p.id).limit(1).single();
+const { data: recRow } = await admin.from("recalls_24h").select("id").eq("patient_id", A.p.id).eq("captured_by", "nutriologo").limit(1).single();
+const viewWrites = await Promise.all([
+  c.from("my_anthropometry").update({ weight_kg: 55 }).eq("id", anthRow.id),
+  c.from("my_anthropometry").insert({ patient_id: B.p.id, weight_kg: 999 }),
+  c.from("my_anthropometry").delete().eq("id", anthRow.id),
+  c.from("my_recalls").delete().eq("id", recRow.id),
+  c.from("my_patient").update({ pathologies: ["ninguna"], email: `cambiado-${stamp}@example.test` }).eq("id", A.p.id),
+  c.from("my_patient").insert({ full_name: "Fantasma", email: `fantasma-${stamp}@example.test` }),
+]);
+const [{ data: anthAfter }, { data: recAfter }, { data: injected }, { data: pAfter }, { data: ghost }] = await Promise.all([
+  admin.from("anthropometry").select("weight_kg").eq("id", anthRow.id).maybeSingle(),
+  admin.from("recalls_24h").select("id").eq("id", recRow.id).maybeSingle(),
+  admin.from("anthropometry").select("id").eq("patient_id", B.p.id).eq("weight_kg", 999),
+  admin.from("patients").select("email, pathologies").eq("id", A.p.id).single(),
+  admin.from("patients").select("id").eq("email", `fantasma-${stamp}@example.test`),
+]);
+check("Las vistas del paciente rechazan INSERT/UPDATE/DELETE", viewWrites.every((r) => !!r.error));
+check("Paciente no altera ni borra mediciones o R24h de consulta vía vistas",
+  Number(anthAfter?.weight_kg) === Number(anthRow.weight_kg) && !!recAfter);
+check("Paciente no inserta mediciones en el expediente de otro ni crea expedientes", (injected ?? []).length === 0 && (ghost ?? []).length === 0);
+check("Paciente no edita su correo ni patologías vía my_patient", pAfter.email === A.p.email && !(pAfter.pathologies ?? []).includes("ninguna"));
+
 const { data: cons } = await c.from("consultations").select("id");
 check("Paciente no ve notas SOAP (ni las suyas)", cons.length === 0);
 const { data: qn } = await c.from("quick_notes").select("id");
@@ -244,6 +269,13 @@ if (!staffErr) {
   const { error: paper } = await staff.from("legal_acceptances").insert({ patient_id: A.p.id, document: "aviso_paciente", version: "v", method: "papel", recorded_by: devId });
   const { error: paperFake } = await staff.from("legal_acceptances").insert({ patient_id: A.p.id, document: "aviso_paciente", version: "v", method: "electronico", recorded_by: devId });
   check("El consultorio registra firmas en papel, pero no aceptaciones electrónicas", !paper && !!paperFake);
+  // El correo y la cuenta de un expediente activado no se cambian (los enlaces de acceso salen de ese correo)
+  const { error: mailLocked } = await staff.from("patients").update({ email: `otra-cuenta-${stamp}@example.test` }).eq("id", A.p.id);
+  const { error: userLocked } = await staff.from("patients").update({ user_id: B.u.id }).eq("id", A.p.id);
+  const { data: idAfter } = await admin.from("patients").select("email, user_id").eq("id", A.p.id).single();
+  check("El consultorio no cambia el correo ni la cuenta de un expediente activado", !!mailLocked && !!userLocked && idAfter.email === A.p.email && idAfter.user_id === A.u.id);
+  const { error: sameMail } = await staff.from("patients").update({ email: A.p.email.toUpperCase() }).eq("id", A.p.id);
+  check("Guardar el expediente con el mismo correo (otra capitalización) sigue funcionando", !sameMail);
   const { data: legDel } = await staff.from("legal_acceptances").delete().eq("patient_id", A.p.id).select("id");
   check("La evidencia de consentimiento no se puede borrar", (legDel ?? []).length === 0);
 }

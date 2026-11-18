@@ -1,0 +1,37 @@
+
+### takeover
+Traceback (most recent call last):
+  File "C:\Users\rodri\VitalIA\AUDIT\qa\scripts\qa_flows.py", line 21, in deco
+    try: fn()
+         ^^^^
+  File "C:\Users\rodri\VitalIA\AUDIT\qa\scripts\qa_flows.py", line 212, in _
+    v = page_of(b); go(v, link.replace("http://localhost:3000", BASE)); v.wait_for_timeout(2000)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\rodri\VitalIA\AUDIT\qa\scripts\qa_flows.py", line 32, in go
+    page.goto(BASE + path); page.wait_for_load_state("networkidle"); return page
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\rodri\AppData\Local\Temp\claude\82f7956427348aec\1d96b0a8-df59-4008-9640-8a0a084d40f0\scratchpad\pwenv\Lib\site-packages\playwright\sync_api\_generated.py", line 18561, in goto
+    self._sync(
+  File "C:\Users\rodri\AppData\Local\Temp\claude\82f7956427348aec\1d96b0a8-df59-4008-9640-8a0a084d40f0\scratchpad\pwenv\Lib\site-packages\playwright\_impl\_sync_base.py", line 124, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\rodri\AppData\Local\Temp\claude\82f7956427348aec\1d96b0a8-df59-4008-9640-8a0a084d40f0\scratchpad\pwenv\Lib\site-packages\playwright\_impl\page.py", line 600, in goto
+    return await self._main_frame.goto(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\rodri\AppData\Local\Temp\claude\82f7956427348aec\1d96b0a8-df59-4008-9640-8a0a084d40f0\scratchpad\pwenv\Lib\site-packages\playwright\_impl\frame.py", line 217, in goto
+    await self._channel.goto(
+  File "C:\Users\rodri\AppData\Local\Temp\claude\82f7956427348aec\1d96b0a8-df59-4008-9640-8a0a084d40f0\scratchpad\pwenv\Lib\site-packages\playwright\_impl\channel_owner.py", line 398, in _mapped
+    return mapper(await awaitable)
+                  ^^^^^^^^^^^^^^^
+  File "C:\Users\rodri\AppData\Local\Temp\claude\82f7956427348aec\1d96b0a8-df59-4008-9640-8a0a084d40f0\scratchpad\pwenv\Lib\site-packages\playwright\_impl\channel_owner.py", line 387, in finish
+    raise e from None
+  File "C:\Users\rodri\AppData\Local\Temp\claude\82f7956427348aec\1d96b0a8-df59-4008-9640-8a0a084d40f0\scratchpad\pwenv\Lib\site-packages\playwright\_impl\channel_owner.py", line 352, in finish
+    result = await zone.run_async(lambda: awaitable)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\rodri\AppData\Local\Temp\claude\82f7956427348aec\1d96b0a8-df59-4008-9640-8a0a084d40f0\scratchpad\pwenv\Lib\site-packages\playwright\_impl\utils\zones.py", line 58, in run_async
+    return await func()
+           ^^^^^^^^^^^^
+playwright._impl._errors.Error: Page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL
+Call log:
+  - navigating to "http://localhost:3003http://localhost:3003/auth/confirm?token_hash=<redactado>&type=recovery&next=%2Finvitacion", waiting until "load"
+

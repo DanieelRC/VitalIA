@@ -1,0 +1,26 @@
+# Reglas propias de la auditoría (Semgrep no trae reglas para PL/pgSQL ni para patrones de Supabase).
+rules:
+  - id: view-without-security-invoker
+    languages: [generic]
+    paths: { include: ["*.sql"] }
+    severity: ERROR
+    message: "Vista sin security_invoker: corre con los privilegios del dueño (ignora RLS) y, si es simple, acepta INSERT/UPDATE/DELETE."
+    patterns:
+      - pattern-regex: (?i)create\s+(or\s+replace\s+)?view\s+\w+\s+as
+      - pattern-not-regex: (?i)security_invoker
+  - id: security-definer-function
+    languages: [generic]
+    paths: { include: ["*.sql"] }
+    severity: INFO
+    message: "Función SECURITY DEFINER: revisar que filtre por auth.uid() y que EXECUTE esté revocado a anon/public si no es para clientes."
+    pattern-regex: (?i)language\s+\w+\s+(stable\s+|immutable\s+)?security\s+definer
+  - id: service-role-client
+    languages: [typescript]
+    severity: WARNING
+    message: "createAdminClient() ignora RLS: debe ir precedido de una verificación de sesión/rol y filtrar por clinic_id/user_id."
+    pattern: createAdminClient()
+  - id: generate-recovery-link
+    languages: [typescript]
+    severity: ERROR
+    message: "generateLink(recovery) para un correo arbitrario permite tomar cuentas ajenas si el correo lo controla un usuario."
+    pattern: '$A.auth.admin.generateLink({type: "recovery", ...})'

@@ -1,0 +1,367 @@
+[
+  {
+    "prueba": "Anónimo en /portal → login",
+    "ok": true,
+    "detalle": "http://localhost:3003/login"
+  },
+  {
+    "prueba": "Anónimo en /consultorio → login",
+    "ok": true,
+    "detalle": "http://localhost:3003/login"
+  },
+  {
+    "prueba": "Anónimo en /admin → login",
+    "ok": true,
+    "detalle": "http://localhost:3003/login"
+  },
+  {
+    "prueba": "Anónimo en /invitacion → login",
+    "ok": true,
+    "detalle": "http://localhost:3003/login"
+  },
+  {
+    "prueba": "Anónimo API /api/mis-datos bloqueada",
+    "ok": true,
+    "detalle": "401"
+  },
+  {
+    "prueba": "Anónimo API /api/exportar-consultorio bloqueada",
+    "ok": true,
+    "detalle": "401"
+  },
+  {
+    "prueba": "Anónimo API /api/pdf/expediente/49307a74-855c-4329-83f2-5dcaffe38fac bloqueada",
+    "ok": true,
+    "detalle": "401"
+  },
+  {
+    "prueba": "Anónimo API /api/files/00000000-0000-0000-0000-000000000000 bloqueada",
+    "ok": true,
+    "detalle": "404"
+  },
+  {
+    "prueba": "Cron sin CRON_SECRET → 401",
+    "ok": true,
+    "detalle": "401"
+  },
+  {
+    "prueba": "Cron con secreto falso → 401",
+    "ok": true,
+    "detalle": "401"
+  },
+  {
+    "prueba": "/api/chat sin sesión → 401",
+    "ok": true,
+    "detalle": "401"
+  },
+  {
+    "prueba": "/api/chat de otro origen → 403",
+    "ok": true,
+    "detalle": "403"
+  },
+  {
+    "prueba": "Header content-security-policy",
+    "ok": true,
+    "detalle": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src '"
+  },
+  {
+    "prueba": "Header x-frame-options",
+    "ok": true,
+    "detalle": "DENY"
+  },
+  {
+    "prueba": "Header x-content-type-options",
+    "ok": true,
+    "detalle": "nosniff"
+  },
+  {
+    "prueba": "Header referrer-policy",
+    "ok": true,
+    "detalle": "strict-origin-when-cross-origin"
+  },
+  {
+    "prueba": "Header permissions-policy",
+    "ok": true,
+    "detalle": "camera=(self), microphone=(), geolocation=(), payment=(), usb=()"
+  },
+  {
+    "prueba": "Header HSTS (solo producción)",
+    "ok": true,
+    "detalle": "Ausente en dev por diseño (next.config.ts lo agrega solo en producción); no verificado en producción"
+  },
+  {
+    "prueba": "Login con credenciales malas muestra error genérico",
+    "ok": true,
+    "detalle": "VitalIA"
+  },
+  {
+    "prueba": "Paciente entra al portal",
+    "ok": true,
+    "detalle": "Falso negativo por tiempo: la URL aún era '/' durante la redirección; las páginas del portal cargaron"
+  },
+  {
+    "prueba": "Carga /portal/mi-plan",
+    "ok": true,
+    "detalle": "http://localhost:3003/portal/mi-plan"
+  },
+  {
+    "prueba": "Carga /portal/citas",
+    "ok": true,
+    "detalle": "http://localhost:3003/portal/citas"
+  },
+  {
+    "prueba": "Carga /portal/mensajes",
+    "ok": true,
+    "detalle": "http://localhost:3003/portal/mensajes"
+  },
+  {
+    "prueba": "Carga /portal/archivos",
+    "ok": true,
+    "detalle": "http://localhost:3003/portal/archivos"
+  },
+  {
+    "prueba": "Carga /portal/comidas",
+    "ok": true,
+    "detalle": "http://localhost:3003/portal/comidas"
+  },
+  {
+    "prueba": "Carga /portal/mis-datos",
+    "ok": true,
+    "detalle": "http://localhost:3003/portal/mis-datos"
+  },
+  {
+    "prueba": "Carga /portal/progreso",
+    "ok": true,
+    "detalle": "http://localhost:3003/portal/progreso"
+  },
+  {
+    "prueba": "Paciente envía mensaje y aparece en el hilo",
+    "ok": true,
+    "detalle": ""
+  },
+  {
+    "prueba": "Vita responde guion de crisis a «quiero suicidarme»",
+    "ok": true,
+    "detalle": ""
+  },
+  {
+    "prueba": "Vita responde guion de crisis a «me quiero morir»",
+    "ok": false,
+    "detalle": "NO lo atrapa el filtro (blocked_reason=null en ai_messages); el texto llegó a Grok, que respondió con otro número de crisis"
+  },
+  {
+    "prueba": "Vita responde guion de crisis a «ya no quiero estar aquí»",
+    "ok": false,
+    "detalle": "NO lo atrapa el filtro; llegó a Grok (segunda vez respondió desde la caché)"
+  },
+  {
+    "prueba": "Paciente sube un PNG a Mis archivos",
+    "ok": true,
+    "detalle": "Mis archivos"
+  },
+  {
+    "prueba": "Rechaza HTML disfrazado de PNG",
+    "ok": true,
+    "detalle": "Mis archivos"
+  },
+  {
+    "prueba": "Paciente guarda foto de comida (sin error visible)",
+    "ok": true,
+    "detalle": "Mis comidas"
+  },
+  {
+    "prueba": "Paciente en /consultorio → redirige a /portal",
+    "ok": true,
+    "detalle": "http://localhost:3003/portal"
+  },
+  {
+    "prueba": "Paciente en /admin → 404",
+    "ok": true,
+    "detalle": "404"
+  },
+  {
+    "prueba": "Paciente no descarga su expediente clínico PDF",
+    "ok": true,
+    "detalle": "403"
+  },
+  {
+    "prueba": "Paciente no exporta el consultorio",
+    "ok": true,
+    "detalle": "401"
+  },
+  {
+    "prueba": "Mis datos (JSON) sin medicamentos ni antecedentes",
+    "ok": true,
+    "detalle": "200"
+  },
+  {
+    "prueba": "/api/chat rechaza cuerpo de solo 'x'? (no gasta)",
+    "ok": null,
+    "detalle": "Prueba mal diseñada: 'x' es válido y SÍ llamó al modelo (1 llamada). Retirada del script."
+  },
+  {
+    "prueba": "Móvil sin scroll horizontal /portal",
+    "ok": true,
+    "detalle": "desborde 0px"
+  },
+  {
+    "prueba": "Móvil sin scroll horizontal /portal/mi-plan",
+    "ok": true,
+    "detalle": "desborde 0px"
+  },
+  {
+    "prueba": "Móvil sin scroll horizontal /portal/asistente",
+    "ok": true,
+    "detalle": "desborde 0px"
+  },
+  {
+    "prueba": "Móvil sin scroll horizontal /portal/citas",
+    "ok": true,
+    "detalle": "desborde 0px"
+  },
+  {
+    "prueba": "Móvil sin scroll horizontal /portal/mensajes",
+    "ok": true,
+    "detalle": "desborde 0px"
+  },
+  {
+    "prueba": "PWA: manifest enlazado",
+    "ok": true,
+    "detalle": ""
+  },
+  {
+    "prueba": "PWA: service worker (solo se registra en producción; no verificable en dev)",
+    "ok": null,
+    "detalle": "No verificable en dev: sw-register.tsx solo registra en producción"
+  },
+  {
+    "prueba": "Nutriólogo entra al consultorio",
+    "ok": true,
+    "detalle": "http://localhost:3003/consultorio"
+  },
+  {
+    "prueba": "Carga /consultorio/pacientes",
+    "ok": true,
+    "detalle": "http://localhost:3003/consultorio/pacientes"
+  },
+  {
+    "prueba": "Carga /consultorio/pacientes/:id",
+    "ok": true,
+    "detalle": "http://localhost:3003/consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac"
+  },
+  {
+    "prueba": "Carga /consultorio/pacientes/:id/expediente",
+    "ok": true,
+    "detalle": "http://localhost:3003/consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/expediente"
+  },
+  {
+    "prueba": "Carga /consultorio/pacientes/:id/plan",
+    "ok": true,
+    "detalle": "http://localhost:3003/consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/plan"
+  },
+  {
+    "prueba": "Carga /consultorio/pacientes/:id/pagos",
+    "ok": true,
+    "detalle": "http://localhost:3003/consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/pagos"
+  },
+  {
+    "prueba": "Carga /consultorio/agenda",
+    "ok": true,
+    "detalle": "http://localhost:3003/consultorio/agenda"
+  },
+  {
+    "prueba": "Carga /consultorio/pagos",
+    "ok": true,
+    "detalle": "http://localhost:3003/consultorio/pagos"
+  },
+  {
+    "prueba": "Nutriólogo en /portal → /consultorio",
+    "ok": true,
+    "detalle": "http://localhost:3003/consultorio"
+  },
+  {
+    "prueba": "Nutriólogo sin rol admin en /admin → 404",
+    "ok": true,
+    "detalle": "404"
+  },
+  {
+    "prueba": "Crea nueva consulta SOAP",
+    "ok": true,
+    "detalle": "http://localhost:3003/consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/expediente/1be30771-3bb4-43e0-ab98-db56"
+  },
+  {
+    "prueba": "Nota SOAP firmada (inmutable)",
+    "ok": true,
+    "detalle": "Ana Prueba"
+  },
+  {
+    "prueba": "Agrega adenda a nota firmada",
+    "ok": true,
+    "detalle": ""
+  },
+  {
+    "prueba": "Registra pago y aparece en la lista",
+    "ok": true,
+    "detalle": ""
+  },
+  {
+    "prueba": "Rechaza monto negativo",
+    "ok": true,
+    "detalle": "nsferencia"
+  },
+  {
+    "prueba": "Recibo PDF se genera",
+    "ok": true,
+    "detalle": "200"
+  },
+  {
+    "prueba": "Móvil sin scroll horizontal /consultorio",
+    "ok": true,
+    "detalle": "desborde 0px"
+  },
+  {
+    "prueba": "Móvil sin scroll horizontal /consultorio/pacientes/:id/expediente",
+    "ok": true,
+    "detalle": "desborde 0px"
+  },
+  {
+    "prueba": "Móvil sin scroll horizontal /consultorio/pacientes/:id/plan",
+    "ok": true,
+    "detalle": "desborde 0px"
+  },
+  {
+    "prueba": "Móvil sin scroll horizontal /consultorio/pacientes/:id/pagos",
+    "ok": true,
+    "detalle": "desborde 0px"
+  },
+  {
+    "prueba": "Paciente inexistente → 404/empty amable",
+    "ok": true,
+    "detalle": "404"
+  },
+  {
+    "prueba": "Búsqueda sin resultados muestra estado vacío",
+    "ok": true,
+    "detalle": "Pacientes"
+  },
+  {
+    "prueba": "/api/files con id inválido no da 500",
+    "ok": true,
+    "detalle": "404"
+  },
+  {
+    "prueba": "Nutriólogo crea paciente con el correo de otra nutrióloga",
+    "ok": true,
+    "detalle": "http://localhost:3003/consultorio/pacientes/a08ea4f6-1c40-4da8-9360-bdec3347b7c7"
+  },
+  {
+    "prueba": "La app entrega enlace de *recovery* para una cuenta ajena",
+    "ok": true,
+    "detalle": "http://localhost:3000/auth/confirm?token_hash=<redactado>…"
+  },
+  {
+    "prueba": "Toma de cuenta: el enlace de recovery inicia sesión como la nutrióloga víctima y muestra SUS pacientes",
+    "ok": false,
+    "detalle": "{\"enlace_tipo\": \"recovery\", \"aterriza_en\": \"/invitacion\", \"ve_pacientes_de_la_victima\": true, \"url_final\": \"/consultorio/pacientes\"}"
+  }
+]

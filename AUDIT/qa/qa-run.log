@@ -1,0 +1,116 @@
+PASS Anónimo en /portal → login — http://localhost:3003/login
+PASS Anónimo en /consultorio → login — http://localhost:3003/login
+PASS Anónimo en /admin → login — http://localhost:3003/login
+PASS Anónimo en /invitacion → login — http://localhost:3003/login
+PASS Anónimo API /api/mis-datos bloqueada — 401
+PASS Anónimo API /api/exportar-consultorio bloqueada — 401
+PASS Anónimo API /api/pdf/expediente/49307a74-855c-4329-83f2-5dcaffe38fac bloqueada — 401
+PASS Anónimo API /api/files/00000000-0000-0000-0000-000000000000 bloqueada — 404
+PASS Cron sin CRON_SECRET → 401 — 401
+PASS Cron con secreto falso → 401 — 401
+PASS /api/chat sin sesión → 401 — 401
+PASS /api/chat de otro origen → 403 — 403
+PASS Header content-security-policy — default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src '
+PASS Header x-frame-options — DENY
+PASS Header x-content-type-options — nosniff
+PASS Header referrer-policy — strict-origin-when-cross-origin
+PASS Header permissions-policy — camera=(self), microphone=(), geolocation=(), payment=(), usb=()
+FAIL Header HSTS (solo producción) — ausente en dev: esperado
+PASS Login con credenciales malas muestra error genérico — VitalIA
+Tu plan, plato por plato.
+
+Consulta nutricional con seguimiento entre citas: tu plan, tus avances y tu nutriólog
+FAIL Paciente entra al portal — http://localhost:3003/
+PASS Carga /portal/mi-plan — http://localhost:3003/portal/mi-plan
+PASS Carga /portal/citas — http://localhost:3003/portal/citas
+PASS Carga /portal/mensajes — http://localhost:3003/portal/mensajes
+PASS Carga /portal/archivos — http://localhost:3003/portal/archivos
+PASS Carga /portal/comidas — http://localhost:3003/portal/comidas
+PASS Carga /portal/mis-datos — http://localhost:3003/portal/mis-datos
+PASS Carga /portal/progreso — http://localhost:3003/portal/progreso
+PASS Paciente envía mensaje y aparece en el hilo — 
+PASS Vita responde guion de crisis a «quiero suicidarme» — 
+PASS Vita responde guion de crisis a «me quiero morir» — 
+PASS Vita responde guion de crisis a «ya no quiero estar aquí» — 
+PASS Paciente sube un PNG a Mis archivos — Mis archivos
+
+Comparte laboratorios, estudios o fotos con tu nutriólogo.
+
+tiny.png
+laboratorio 17 nov 2026
+tiny.png
+labo
+PASS Rechaza HTML disfrazado de PNG — Mis archivos
+
+Comparte laboratorios, estudios o fotos con tu nutriólogo.
+
+tiny.png
+laboratorio 17 nov 2026
+tiny.png
+labo
+PASS Paciente guarda foto de comida (sin error visible) — Mis comidas
+
+Toma una foto de tu plato. Tu nutriólogo la verá y te dejará comentarios; aquí nadie te califica.
+
+Nueva fo
+PASS Paciente en /consultorio → redirige a /portal — http://localhost:3003/portal
+PASS Paciente en /admin → 404 — 404
+PASS Paciente no descarga su expediente clínico PDF — 403
+PASS Paciente no exporta el consultorio — 401
+PASS Mis datos (JSON) sin medicamentos ni antecedentes — 200
+PASS /api/chat rechaza cuerpo de solo 'x'? (no gasta) — 200
+PASS Móvil sin scroll horizontal /portal — desborde 0px
+PASS Móvil sin scroll horizontal /portal/mi-plan — desborde 0px
+PASS Móvil sin scroll horizontal /portal/asistente — desborde 0px
+PASS Móvil sin scroll horizontal /portal/citas — desborde 0px
+PASS Móvil sin scroll horizontal /portal/mensajes — desborde 0px
+PASS PWA: manifest enlazado — 
+PASS PWA: service worker (solo se registra en producción; no verificable en dev) — registros=0
+PASS Nutriólogo entra al consultorio — http://localhost:3003/consultorio
+PASS Carga /consultorio/pacientes — http://localhost:3003/consultorio/pacientes
+PASS Carga /consultorio/pacientes/:id — http://localhost:3003/consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac
+PASS Carga /consultorio/pacientes/:id/expediente — http://localhost:3003/consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/expediente
+PASS Carga /consultorio/pacientes/:id/plan — http://localhost:3003/consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/plan
+PASS Carga /consultorio/pacientes/:id/pagos — http://localhost:3003/consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/pagos
+PASS Carga /consultorio/agenda — http://localhost:3003/consultorio/agenda
+PASS Carga /consultorio/pagos — http://localhost:3003/consultorio/pagos
+PASS Nutriólogo en /portal → /consultorio — http://localhost:3003/consultorio
+PASS Nutriólogo sin rol admin en /admin → 404 — 404
+PASS Crea nueva consulta SOAP — http://localhost:3003/consultorio/pacientes/49307a74-855c-4329-83f2-5dcaffe38fac/expediente/1be30771-3bb4-43e0-ab98-db56
+PASS Nota SOAP firmada (inmutable) — Ana Prueba
+34 años
+· Femenino
+Resumen
+Copiloto
+Pre-consulta
+Expediente SOAP
+Antropometría
+Plan alimenticio
+Recordatorio 
+PASS Agrega adenda a nota firmada — 
+PASS Registra pago y aparece en la lista — 
+PASS Rechaza monto negativo — nsferencia
+Tarjeta
+Con paquete
+Sesiones del paquete
+Solo para tipo Paquete
+Registrar
+Too small: expected number to be >=
+PASS Recibo PDF se genera — 200
+PASS Móvil sin scroll horizontal /consultorio — desborde 0px
+PASS Móvil sin scroll horizontal /consultorio/pacientes/:id/expediente — desborde 0px
+PASS Móvil sin scroll horizontal /consultorio/pacientes/:id/plan — desborde 0px
+PASS Móvil sin scroll horizontal /consultorio/pacientes/:id/pagos — desborde 0px
+PASS Paciente inexistente → 404/empty amable — 404
+This page could not be found.
+PASS Búsqueda sin resultados muestra estado vacío — Pacientes
+Nuevo paciente
+Incluir inactivos
+
+No hay pacientes con ese nombre.
+PASS /api/files con id inválido no da 500 — 404
+PASS Nutriólogo crea paciente con el correo de otra nutrióloga — http://localhost:3003/consultorio/pacientes/a08ea4f6-1c40-4da8-9360-bdec3347b7c7
+PASS La app entrega enlace de *recovery* para una cuenta ajena — http://localhost:3000/auth/confirm?token_hash=<redactado>…
+FAIL takeover (excepción) — Error: Page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL
+
+70/73 OK
